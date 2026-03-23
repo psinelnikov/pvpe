@@ -1,0 +1,5 @@
+rayls-protocol-sdk/=node_modules/@rayls/contracts/src/rayls-protocol-sdk/
+rayls-node/=node_modules/@rayls/contracts/src/rayls-node/
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
+forge-std/=lib/forge-std/src/

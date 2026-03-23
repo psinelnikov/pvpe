@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "@rayls/contracts": "2.6.3-nightly.2"
+  }
+}
