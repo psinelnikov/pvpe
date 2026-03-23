@@ -8,6 +8,7 @@ cache/
 # Dependencies
 lib/
 node_modules/
+package-lock.json
 
 # OS
 .DS_Store

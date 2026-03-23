@@ -21,6 +21,7 @@ See [Architecture Overview](docs/architecture.md) for how the bridge and contrac
 ## Prerequisites
 
 - [Foundry](https://book.getfoundry.sh/getting-started/installation) installed (`forge`, `cast`)
+- [Node.js](https://nodejs.org/) 18+ installed (for `npm`)
 - `curl` for API calls
 - Backend URL + API keys (provided by hackathon organizers)
 
@@ -69,6 +70,8 @@ curl -X POST "$BACKEND_URL/api/user/onboarding" \
   -d '{"external_user_id": "your-unique-id"}'
 ```
 
+> Replace `"your-unique-id"` with any unique string (e.g. your team name). Use the **same ID** in Step 2.
+
 Response:
 ```json
 {
@@ -99,6 +102,8 @@ curl -X PATCH "$BACKEND_URL/api/operator/onboarding/status" \
   }'
 ```
 
+> A successful response returns HTTP 200 with an empty body.
+
 ### Step 3: Update Your Environment
 
 Update `.env` with the values from Step 1's response, then reload:
@@ -121,9 +126,13 @@ source .env
 forge script script/Deploy.s.sol --rpc-url $PRIVACY_LEDGER_RPC_URL --broadcast --legacy
 ```
 
-The script discovers infrastructure addresses from the on-chain registry and deploys your token. Copy the deployed address and update `.env`, then reload:
-```bash
+The script discovers infrastructure addresses from the on-chain registry and deploys your token. Copy the deployed address and set it in your `.env`:
+```
 TOKEN_ADDRESS=<deployed address from output>
+```
+
+Then reload:
+```bash
 source .env
 ```
 
@@ -135,16 +144,16 @@ Register the deployed token with the governance system.
 curl -X POST "$BACKEND_URL/api/user/tokens" \
   -H "Authorization: Bearer $USER_AUTH_KEY" \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "My Token",
-    "symbol": "MTK",
-    "address": "<TOKEN_ADDRESS>",
-    "uri": "",
-    "standard": 1
-  }'
+  -d "{
+    \"name\": \"$TOKEN_NAME\",
+    \"symbol\": \"$TOKEN_SYMBOL\",
+    \"address\": \"$TOKEN_ADDRESS\",
+    \"uri\": \"\",
+    \"standard\": 1
+  }"
 ```
 
-> `standard: 1` = ERC20
+> `standard`: `1` = ERC20, `2` = ERC721, `3` = ERC1155
 
 ### Step 6: Approve Your Token
 
@@ -154,10 +163,7 @@ Activate the token. This triggers the relayer to deploy a mirror contract on the
 curl -X PATCH "$BACKEND_URL/api/operator/tokens/status" \
   -H "Authorization: Bearer $OPERATOR_AUTH_KEY" \
   -H "Content-Type: application/json" \
-  -d '{
-    "address": "<TOKEN_ADDRESS>",
-    "status": 1
-  }'
+  -d "{\"address\": \"$TOKEN_ADDRESS\", \"status\": 1}"
 ```
 
 ### Step 7: Wait for Mirror Deployment
@@ -167,11 +173,10 @@ After approval, the relayer automatically:
 2. Maps the private → public token addresses
 3. Authorizes the mirror as a sender
 
-**This takes ~30-60 seconds.** You can verify by checking the token status:
+**This takes ~30-60 seconds.** You can verify by running CheckBalance — if it prints a mirror address instead of reverting, the mirror is deployed:
 
 ```bash
-curl "$BACKEND_URL/api/user/tokens" \
-  -H "Authorization: Bearer $USER_AUTH_KEY"
+forge script script/CheckBalance.s.sol --rpc-url $PRIVACY_LEDGER_RPC_URL
 ```
 
 ### Step 8: Mint Tokens
@@ -209,6 +214,20 @@ forge script script/CheckBalance.s.sol --rpc-url $PRIVACY_LEDGER_RPC_URL
 ```
 
 This script automatically discovers the mirror contract address from the on-chain governance registry, then queries the public chain for your balance.
+
+---
+
+## Using ERC721 or ERC1155
+
+The same flow works for NFTs and multi-tokens. Use the matching scripts and set `standard` accordingly when registering via API.
+
+| Standard | Contract | Deploy Script | Mint Script | Transfer Script | API `standard` |
+|----------|----------|--------------|-------------|----------------|----------------|
+| ERC20 | `HackathonToken.sol` | `Deploy.s.sol` | `Mint.s.sol` | `Transfer.s.sol` | `1` |
+| ERC721 | `HackathonNFT.sol` | `DeployNFT.s.sol` | `MintNFT.s.sol` | `TransferNFT.s.sol` | `2` |
+| ERC1155 | `HackathonMultiToken.sol` | `DeployMultiToken.s.sol` | `MintMultiToken.s.sol` | `TransferMultiToken.s.sol` | `3` |
+
+Configure the matching env vars (see `.env.example` for `NFT_*` and `MULTI_TOKEN_*` sections), then follow Steps 4-10 using the corresponding scripts.
 
 ---
 

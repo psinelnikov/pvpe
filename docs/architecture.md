@@ -134,7 +134,7 @@ By using the internal `_mint()`, we skip the cross-chain notification and just u
 
 ## Inherited API Reference
 
-Your token inherits from `RaylsErc20Handler`. Here are the key functions you can call or override — no need to dig through `lib/`:
+Your token inherits from `RaylsErc20Handler`. Here are the key functions you can call or override — no need to dig through the source:
 
 ### Bridging (Privacy Node ↔ Public Chain)
 
