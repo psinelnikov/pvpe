@@ -293,6 +293,95 @@ OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct:free
 
 This is one pattern — adapt the read/analyze/write steps to your challenge track. The repo also includes `Attestation.sol` and `DeployPublic.s.sol` as optional building blocks.
 
+## Marketplace
+
+The repo includes `Marketplace.sol` — an escrow contract you deploy on the public chain to sell your bridged tokens. You list tokens, set prices, and anyone can buy with ETH.
+
+### Prerequisites
+
+Your public chain address needs **gas (ETH)** on the public chain to deploy the marketplace and create listings. The Privacy Node is gasless, but the public chain is not. Ask organizers for a funded wallet or use a faucet.
+
+You also need the **public chain private key** from your onboarding response (Step 1). Save it — you'll need it for all public chain interactions.
+
+### Deploy
+
+```bash
+DEPLOYER_PRIVATE_KEY=<your public_chain_private_key> \
+  forge script script/DeployMarketplace.s.sol --rpc-url $PUBLIC_CHAIN_RPC_URL --broadcast --legacy
+```
+
+> Note: this uses your **public chain key** (not the Privacy Node deployer key), because the marketplace lives on the public chain and you need gas there.
+
+Save the address:
+```
+MARKETPLACE_ADDRESS=<from output>
+```
+
+### List Tokens for Sale
+
+After bridging tokens to the public chain (Steps 1-10), you can list them on your marketplace.
+
+**1. Approve** the marketplace to spend your tokens:
+```bash
+cast send <PUBLIC_MIRROR_ADDRESS> \
+  "approve(address,uint256)" \
+  <MARKETPLACE_ADDRESS> <AMOUNT_IN_WEI> \
+  --rpc-url $PUBLIC_CHAIN_RPC_URL \
+  --private-key <PUBLIC_CHAIN_PRIVATE_KEY> \
+  --legacy
+```
+
+**2. List** — tokens are transferred into the marketplace escrow:
+```bash
+# ERC20: assetType=0, tokenId=0
+cast send <MARKETPLACE_ADDRESS> \
+  "list(address,uint8,uint256,uint256,uint256)" \
+  <PUBLIC_MIRROR_ADDRESS> 0 0 <AMOUNT_IN_WEI> <PRICE_IN_WEI> \
+  --rpc-url $PUBLIC_CHAIN_RPC_URL \
+  --private-key <PUBLIC_CHAIN_PRIVATE_KEY> \
+  --legacy
+```
+
+```bash
+# ERC721: assetType=1, amount is ignored
+cast send <MARKETPLACE_ADDRESS> \
+  "list(address,uint8,uint256,uint256,uint256)" \
+  <PUBLIC_MIRROR_ADDRESS> 1 <TOKEN_ID> 1 <PRICE_IN_WEI> \
+  --rpc-url $PUBLIC_CHAIN_RPC_URL \
+  --private-key <PUBLIC_CHAIN_PRIVATE_KEY> \
+  --legacy
+```
+
+### Buy
+
+Anyone can buy a listed asset by sending ETH:
+```bash
+cast send <MARKETPLACE_ADDRESS> \
+  "buy(uint256)" <LISTING_ID> \
+  --value <PRICE_IN_WEI> \
+  --rpc-url $PUBLIC_CHAIN_RPC_URL \
+  --private-key <BUYER_PRIVATE_KEY> \
+  --legacy
+```
+
+### Manage Listings
+
+```bash
+# Update price
+cast send <MARKETPLACE_ADDRESS> "update(uint256,uint256)" <LISTING_ID> <NEW_PRICE_WEI> \
+  --rpc-url $PUBLIC_CHAIN_RPC_URL --private-key <PUBLIC_CHAIN_PRIVATE_KEY> --legacy
+
+# Delist (returns tokens to you)
+cast send <MARKETPLACE_ADDRESS> "delist(uint256)" <LISTING_ID> \
+  --rpc-url $PUBLIC_CHAIN_RPC_URL --private-key <PUBLIC_CHAIN_PRIVATE_KEY> --legacy
+
+# View a listing
+cast call <MARKETPLACE_ADDRESS> "getListing(uint256)" <LISTING_ID> --rpc-url $PUBLIC_CHAIN_RPC_URL
+
+# View all active listings
+cast call <MARKETPLACE_ADDRESS> "getActiveListings()" --rpc-url $PUBLIC_CHAIN_RPC_URL
+```
+
 ## Customizing Your Token
 
 Edit `src/HackathonToken.sol` — there are commented-out examples for:
@@ -348,6 +437,8 @@ The mirror address is shown in the `CheckBalance.s.sol` output, or query it via 
 | `Failed to get EIP-1559 fees` | Rayls Privacy Nodes are gasless and don't support EIP-1559 | Add `--legacy` flag to your `forge script` command (already included in all commands above) |
 | Token approval returns HTTP 500 | Backend needs a moment after token registration | Retry the same curl command after 5 seconds |
 | Mirror address returns `0x0000...0000` | Relayer hasn't deployed the mirror yet | Wait 30-60 seconds after token approval |
+| Token register says "not a valid deployed contract" | `TOKEN_ADDRESS` not updated in `.env` after deploy | Set `TOKEN_ADDRESS=<address from Step 4 output>` and run `source .env` |
+| Redeploy reverts with "execution reverted" | Token with the same symbol already registered | Change `TOKEN_SYMBOL` in `.env` to a unique value and redeploy |
 
 ## Debugging
 
