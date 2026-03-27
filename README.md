@@ -297,11 +297,11 @@ This is one pattern — adapt the read/analyze/write steps to your challenge tra
 
 ## Marketplace
 
-The repo includes `Marketplace.sol` — an escrow contract you deploy on the public chain to sell your bridged tokens. You list tokens, set prices, and anyone can buy with ETH.
+The repo includes `Marketplace.sol` — an escrow contract you deploy on the public chain to sell your bridged tokens. You list tokens, set prices, and anyone can buy with USDR.
 
 ### Prerequisites
 
-Your public chain address needs **gas (ETH)** on the public chain to deploy the marketplace and create listings. The Privacy Node is gasless, but the public chain is not. Ask organizers for a funded wallet or use a faucet.
+Your public chain address needs **gas (USDR)** on the public chain to deploy the marketplace and create listings. The Privacy Node is gasless, but the public chain is not. Ask organizers for a funded wallet or use a faucet.
 
 You also need the **public chain private key** from your onboarding response (Step 1). Save it — you'll need it for all public chain interactions.
 
@@ -327,7 +327,7 @@ After bridging tokens to the public chain (Steps 1-10), you can list them on you
 ```bash
 cast send <PUBLIC_MIRROR_ADDRESS> \
   "approve(address,uint256)" \
-  <MARKETPLACE_ADDRESS> <AMOUNT_IN_WEI> \
+  <MARKETPLACE_ADDRESS> <AMOUNT> \
   --rpc-url $PUBLIC_CHAIN_RPC_URL \
   --private-key <PUBLIC_CHAIN_PRIVATE_KEY> \
   --legacy
@@ -338,7 +338,7 @@ cast send <PUBLIC_MIRROR_ADDRESS> \
 # ERC20: assetType=0, tokenId=0
 cast send <MARKETPLACE_ADDRESS> \
   "list(address,uint8,uint256,uint256,uint256)" \
-  <PUBLIC_MIRROR_ADDRESS> 0 0 <AMOUNT_IN_WEI> <PRICE_IN_WEI> \
+  <PUBLIC_MIRROR_ADDRESS> 0 0 <AMOUNT> <PRICE> \
   --rpc-url $PUBLIC_CHAIN_RPC_URL \
   --private-key <PUBLIC_CHAIN_PRIVATE_KEY> \
   --legacy
@@ -348,7 +348,7 @@ cast send <MARKETPLACE_ADDRESS> \
 # ERC721: assetType=1, amount is ignored
 cast send <MARKETPLACE_ADDRESS> \
   "list(address,uint8,uint256,uint256,uint256)" \
-  <PUBLIC_MIRROR_ADDRESS> 1 <TOKEN_ID> 1 <PRICE_IN_WEI> \
+  <PUBLIC_MIRROR_ADDRESS> 1 <TOKEN_ID> 1 <PRICE> \
   --rpc-url $PUBLIC_CHAIN_RPC_URL \
   --private-key <PUBLIC_CHAIN_PRIVATE_KEY> \
   --legacy
@@ -356,11 +356,11 @@ cast send <MARKETPLACE_ADDRESS> \
 
 ### Buy
 
-Anyone can buy a listed asset by sending ETH:
+Anyone can buy a listed asset by sending USDR:
 ```bash
 cast send <MARKETPLACE_ADDRESS> \
   "buy(uint256)" <LISTING_ID> \
-  --value <PRICE_IN_WEI> \
+  --value <PRICE> \
   --rpc-url $PUBLIC_CHAIN_RPC_URL \
   --private-key <BUYER_PRIVATE_KEY> \
   --legacy
@@ -400,7 +400,7 @@ To return tokens from the public chain to your Privacy Node, call `teleportToPri
 ```bash
 cast send <PUBLIC_MIRROR_ADDRESS> \
   "teleportToPrivacyNode(address,uint256,uint256)" \
-  <YOUR_PRIVATE_CHAIN_ADDRESS> <AMOUNT_IN_WEI> <PRIVACY_NODE_CHAIN_ID> \
+  <YOUR_PRIVATE_CHAIN_ADDRESS> <AMOUNT> <PRIVACY_NODE_CHAIN_ID> \
   --rpc-url $PUBLIC_CHAIN_RPC_URL \
   --private-key <PUBLIC_CHAIN_PRIVATE_KEY> \
   --legacy

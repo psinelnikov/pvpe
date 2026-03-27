@@ -18,7 +18,7 @@ contract Marketplace is Ownable {
         AssetType assetType;
         uint256 tokenId;    // ERC721 only (0 for ERC20)
         uint256 amount;     // ERC20 only (1 for ERC721)
-        uint256 price;      // in wei
+        uint256 price;      // Price in USDR (native token)
         bool active;
     }
 
@@ -40,7 +40,7 @@ contract Marketplace is Ownable {
     /// @param assetType ERC20 or ERC721
     /// @param tokenId Token ID (ERC721 only, use 0 for ERC20)
     /// @param amount Amount (ERC20 only, use 1 for ERC721)
-    /// @param price Price in wei
+    /// @param price Price in USDR (native token)
     function list(
         address token,
         AssetType assetType,
@@ -96,7 +96,7 @@ contract Marketplace is Ownable {
 
     // ── Public ──────────────────────────────────────────────────────────
 
-    /// @notice Buy a listed asset. Send ETH >= price.
+    /// @notice Buy a listed asset. Send USDR >= price.
     function buy(uint256 listingId) external payable {
         Listing storage l = listings[listingId];
         require(l.active, "Not active");
@@ -111,7 +111,7 @@ contract Marketplace is Ownable {
         }
 
         (bool sent,) = owner().call{value: msg.value}("");
-        require(sent, "ETH transfer failed");
+        require(sent, "USDR transfer failed");
 
         emit Bought(listingId, msg.sender, msg.value);
     }
