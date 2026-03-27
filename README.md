@@ -22,7 +22,7 @@ See [Architecture Overview](docs/architecture.md) for how the bridge and contrac
 
 - [Foundry](https://book.getfoundry.sh/getting-started/installation) installed (`forge`, `cast`)
 - [Node.js](https://nodejs.org/) 18+ installed (for `npm`)
-- `curl` for API calls
+- `curl` and `jq` for API calls
 - Backend URL + API keys (provided by hackathon organizers)
 
 ## Quick Setup
@@ -67,7 +67,7 @@ Create your identity and get wallet addresses for both chains.
 curl -X POST "$BACKEND_URL/api/user/onboarding" \
   -H "Authorization: Bearer $USER_AUTH_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"external_user_id": "your-unique-id"}'
+  -d '{"external_user_id": "your-unique-id"}' | jq
 ```
 
 > Replace `"your-unique-id"` with any unique string (e.g. your team name). Use the **same ID** in Step 2.
@@ -152,7 +152,7 @@ curl -X POST "$BACKEND_URL/api/user/tokens" \
     \"address\": \"$TOKEN_ADDRESS\",
     \"uri\": \"\",
     \"standard\": 1
-  }"
+  }" | jq
 ```
 
 > `standard`: `1` = ERC20, `2` = ERC721, `3` = ERC1155
@@ -167,6 +167,8 @@ curl -X PATCH "$BACKEND_URL/api/operator/tokens/status" \
   -H "Content-Type: application/json" \
   -d "{\"address\": \"$TOKEN_ADDRESS\", \"status\": 1}"
 ```
+
+> A successful response returns HTTP 200 with an empty body.
 
 ### Step 7: Wait for Mirror Deployment
 
@@ -437,7 +439,6 @@ The mirror address is shown in the `CheckBalance.s.sol` output, or query it via 
 | `Failed to get EIP-1559 fees` | Rayls Privacy Nodes are gasless and don't support EIP-1559 | Add `--legacy` flag to your `forge script` command (already included in all commands above) |
 | Token approval returns HTTP 500 | Backend needs a moment after token registration | Retry the same curl command after 5 seconds |
 | Mirror address returns `0x0000...0000` | Relayer hasn't deployed the mirror yet | Wait 30-60 seconds after token approval |
-| `failed parsing $DEPLOYER_PRIVATE_KEY` | `DEPLOYER_PRIVATE_KEY` is empty or still `0x` | Generate a key with `cast wallet new` and set it in `.env` |
 | Token register says "not a valid deployed contract" | `TOKEN_ADDRESS` not updated in `.env` after deploy | Set `TOKEN_ADDRESS=<address from Step 4 output>` and run `source .env` |
 | Redeploy reverts with "execution reverted" | Token with the same symbol already registered | Change `TOKEN_SYMBOL` in `.env` to a unique value and redeploy |
 
