@@ -1,18 +1,20 @@
 {
-  "name": "private-vault-policy-engine",
+  "name": "rayls-hackathon-starter",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
+  "workspaces": [
+    "api",
+    "scripts"
+  ],
   "scripts": {
-    "configure:policies": "node scripts/configurePolicies.js",
-    "register:agents": "node scripts/registerAgents.js",
-    "daily:rebalance": "node scripts/dailyRebalancer.js",
-    "lending": "node scripts/lendingAgent.js"
-  },
-  "dependencies": {
-    "viem": "^2.21.0"
+    "api:dev": "cd api && npm run dev",
+    "api:start": "cd api && npm run start",
+    "api:db:push": "cd api && npm run db:push",
+    "api:db:generate": "cd api && npm run db:generate"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0"
+    "@rayls/contracts": "2.6.3-nightly.2",
+    "@openzeppelin/contracts": "5.4.0",
+    "@openzeppelin/contracts-upgradeable": "5.4.0"
   }
 }

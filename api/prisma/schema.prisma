@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Intent {
+  id         String     @id @default(uuid())
+  requestId  String     @unique
+  orgId      String
+  agentId    String
+  intentHash String     @unique
+  payload    String
+  status     String     @default("PENDING")
+  createdAt  DateTime   @default(now())
+  decisions  Decision[]
+}
+
+model Decision {
+  id           String     @id @default(uuid())
+  intentId     String
+  intent       Intent     @relation(fields: [intentId], references: [id])
+  status       String
+  policyHash   String
+  codeHash     String
+  decisionHash String     @unique
+  signerType   String
+  teeSignature String
+  teeIdentity  String?
+  payload      String
+  approvalsRequired Int         @default(0)
+  reasons      String?
+  createdAt    DateTime   @default(now())
+  approvals    Approval[]
+}
+
+model Approval {
+  id           String   @id @default(uuid())
+  decisionId   String
+  decision     Decision @relation(fields: [decisionId], references: [id])
+  approver     String
+  signature    String
+  approvalHash String
+  timestamp    Int
+  createdAt    DateTime @default(now())
+}
+
+model Policy {
+  id          String   @id @default(uuid())
+  policyId    String   @unique
+  name        String
+  version     Int      @default(1)
+  rulesJson   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Agent {
+  id          String   @id @default(uuid())
+  agentId     String   @unique
+  name        String
+  walletAddr  String
+  privateKey  String?
+  policyId    String
+  orgId       String
+  chainId     Int      @default(99999)
+  tokenAddr   String?
+  gateAddr    String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  key        String    @unique
+  prefix     String
+  orgId      String
+  name       String
+  active     Boolean   @default(true)
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  orgId        String
+  action       String
+  actorType    String
+  actorId      String
+  resourceType String
+  resourceId   String
+  metadata     String?
+  ip           String?
+  createdAt    DateTime @default(now())
+}
+
+model SignerConfig {
+  id        String   @id @default("singleton")
+  mode      String   @default("mock")
+  endpoint  String   @default("http://localhost:8001")
+  codeHash  String   @default("0xaaaa000000000000000000000000000000000000000000000000000000000001")
+  updatedAt DateTime @updatedAt
+}
