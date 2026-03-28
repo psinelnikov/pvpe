@@ -1,8 +1,18 @@
 {
+  "name": "private-vault-policy-engine",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "scripts": {
+    "configure:policies": "node scripts/configurePolicies.js",
+    "register:agents": "node scripts/registerAgents.js",
+    "daily:rebalance": "node scripts/dailyRebalancer.js",
+    "lending": "node scripts/lendingAgent.js"
+  },
   "dependencies": {
-    "@rayls/contracts": "2.6.3-nightly.2",
-    "@openzeppelin/contracts": "5.4.0",
-    "@openzeppelin/contracts-upgradeable": "5.4.0"
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
   }
 }
