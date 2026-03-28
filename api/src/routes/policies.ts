@@ -1,5 +1,5 @@
 import type { FastifyPluginAsync } from 'fastify';
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 import { PolicySchema, hashPolicy } from '../types/schemas.js';
 
 export const policyRoutes: FastifyPluginAsync = async (app) => {

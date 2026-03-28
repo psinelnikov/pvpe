@@ -10,7 +10,9 @@
     "api:dev": "cd api && npm run dev",
     "api:start": "cd api && npm run start",
     "api:db:push": "cd api && npm run db:push",
-    "api:db:generate": "cd api && npm run db:generate"
+    "api:db:generate": "cd api && npm run db:generate",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build"
   },
   "devDependencies": {
     "@rayls/contracts": "2.6.3-nightly.2",

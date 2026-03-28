@@ -1,5 +1,5 @@
 import type { FastifyPluginAsync } from 'fastify';
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 
 export const proofpackRoutes: FastifyPluginAsync = async (app) => {
   app.get('/:intentId', async (req, reply) => {

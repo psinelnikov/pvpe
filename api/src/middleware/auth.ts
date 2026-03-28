@@ -1,17 +1,14 @@
-import { PrismaClient } from '@prisma/client';
-
-export const prisma = new PrismaClient();
+import { prisma } from '../db.js';
 
 export async function authMiddleware(
   req: any,
-  reply: any,
-  done: () => void
+  reply: any
 ) {
   try {
     const skipAuth = req.url === '/health' || req.url === '/admin/api-keys/bootstrap';
     
     if (skipAuth) {
-      return done();
+      return;
     }
 
     const authHeader = req.headers.authorization;
@@ -42,8 +39,6 @@ export async function authMiddleware(
       where: { id: keyRecord.id },
       data: { lastUsedAt: new Date() },
     });
-
-    done();
   } catch (error) {
     console.error('Auth middleware error:', error);
     return reply.code(500).send({ error: 'Internal server error' });

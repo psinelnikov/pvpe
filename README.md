@@ -38,6 +38,14 @@ A TEE-enforced vault system for Swiss Bank Consortium lending, built on **Rayls 
 
 ## What's Included
 
+### Frontend (NEW!)
+A modern React + Vite + Tailwind CSS web interface for managing the vault system:
+- **Dashboard**: Overview of vault statistics and agent activity
+- **Agent Management**: Register, view, and run AI agents
+- **Intent Management**: Create, view, and manage intents with policy evaluation
+- **Policy Management**: Configure spending policies and approval rules
+- **Admin Panel**: API key management, audit logs, and TEE configuration
+
 ### Smart Contracts
 1. **PublicVault.sol** - Public chain vault with USDC deposits/withdrawals
 2. **PrivacyVaultCoordinator.sol** - Private lending manager with yield accrual
@@ -74,6 +82,9 @@ npm install
 
 # Install API dependencies
 cd api && npm install && cd ..
+
+# Install frontend dependencies
+cd frontend && npm install && cd ..
 
 # Set up Prisma
 npm run api:db:generate
@@ -120,7 +131,24 @@ npm run dev
 
 API will be available at `http://localhost:3001`
 
-### 5. Bootstrap API Key
+### 5. Start Frontend (Optional)
+
+In a new terminal:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Frontend will be available at `http://localhost:5173`
+
+Or use the root script:
+
+```bash
+npm run frontend:dev
+```
+
+### 6. Bootstrap API Key
 
 ```bash
 curl -X POST http://localhost:3001/admin/api-keys/bootstrap \
@@ -130,19 +158,21 @@ curl -X POST http://localhost:3001/admin/api-keys/bootstrap \
 
 Save the API key to `.env`.
 
-### 6. Configure Policies
+Alternatively, you can bootstrap the API key from the frontend login page by selecting "Bootstrap New Key".
+
+### 7. Configure Policies
 
 ```bash
 node scripts/configurePolicies.js
 ```
 
-### 7. Register Agents
+### 9. Register Agents
 
 ```bash
 node scripts/registerAgents.js
 ```
 
-### 8. Set Up Daily Rebalancer
+### 10. Set Up Daily Rebalancer
 
 ```bash
 # Add to crontab
@@ -338,6 +368,59 @@ rayls-hackathon-starter/
 - API key authentication with organization scoping
 
 The system operates purely on Rayls chains with local SQLite database.
+
+## Frontend Usage
+
+### Accessing the Web Interface
+
+1. Navigate to `http://localhost:5173` in your browser
+2. Login with your API key or bootstrap a new one
+3. Use the navigation to access different features:
+
+### Dashboard
+- View overall vault statistics
+- Monitor active agents
+- Check pending approvals
+
+### Agents
+- Register new agents
+- View agent details and statistics
+- Run agents with autonomous execution
+- View recent intents per agent
+
+### Intents
+- Create new intents
+- View all intents with status
+- Evaluate policies against intents
+- Approve intents requiring multi-sig
+
+### Policies
+- View all configured policies
+- Create new spending policies
+- Edit existing policies
+- Configure approval rules
+
+### Admin
+- Manage API keys
+- View audit logs
+- Configure TEE signer
+- Test TEE connection
+
+### Environment Variables
+
+Create a `frontend/.env` file:
+```env
+VITE_API_URL=http://localhost:3001
+```
+
+### Building for Production
+
+```bash
+cd frontend
+npm run build
+```
+
+The built files will be in the `frontend/dist` directory.
 
 ## License
 

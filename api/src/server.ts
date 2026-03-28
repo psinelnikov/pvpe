@@ -5,16 +5,22 @@ import { proofpackRoutes } from './routes/proofpacks.js';
 import { policyRoutes } from './routes/policies.js';
 import { agentRoutes } from './routes/agents.js';
 import { adminRoutes } from './routes/admin.js';
+import { lendingRoutes } from './routes/lending.js';
 import { authMiddleware } from './middleware/auth.js';
-import { PrismaClient } from '@prisma/client';
-
-export const prisma = new PrismaClient();
+import { prisma } from './db.js';
 
 export async function buildServer() {
   const app = Fastify({ logger: true });
 
   await app.register(import('@fastify/cors'), {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'), false);
+      }
+    },
   });
 
   app.addHook('onRequest', authMiddleware);
@@ -25,6 +31,7 @@ export async function buildServer() {
   await app.register(policyRoutes, { prefix: '/policies' });
   await app.register(agentRoutes, { prefix: '/agents' });
   await app.register(adminRoutes, { prefix: '/admin' });
+  await app.register(lendingRoutes, { prefix: '/lending' });
 
   app.get('/health', async () => ({ status: 'ok', ts: Date.now() }));
 

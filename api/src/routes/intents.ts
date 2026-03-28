@@ -1,5 +1,5 @@
 import type { FastifyPluginAsync } from 'fastify';
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 import { IntentSchema, hashIntent } from '../types/schemas.js';
 import { v4 as uuid } from 'uuid';
 
