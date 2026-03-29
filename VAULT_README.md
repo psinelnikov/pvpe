@@ -74,10 +74,10 @@ cp .env.vault .env
 Required variables:
 ```env
 # Rayls RPC endpoints
-PRIVACY_NODE_RPC_URL=<your-privacy-node-rpc>
-PUBLIC_CHAIN_RPC_URL=<your-public-chain-rpc>
-RAYLS_CHAIN_ID=<privacy-node-chain-id>
-PUBLIC_CHAIN_ID=<public-chain-id>
+PRIVACY_NODE_RPC_URL=https://privacy-node-5.rayls.com
+PUBLIC_CHAIN_RPC_URL=https://testnet-rpc.rayls.com
+RAYLS_CHAIN_ID=800005
+PUBLIC_CHAIN_ID=7295799
 
 # Deployer keys
 DEPLOYER_PRIVATE_KEY=<your-deployer-key>
@@ -89,6 +89,14 @@ USDC_TOKEN_ADDRESS=<usdc-on-privacy-node>
 # Daily Rebalancer
 DAILY_REBALANCER_ADDRESS=<rebalancer-wallet>
 DAILY_REBALANCER_PRIVATE_KEY=<rebalancer-key>
+
+# Deployment proxy registry
+DEPLOYMENT_PROXY_REGISTRY=0x75Da1758161588FD2ccbFd23AB87f373b0f73c8F
+
+# Backend API configuration
+BACKEND_URL=https://rayls-backend-privacy-node-5.rayls.com
+USER_AUTH_KEY=ce87c003337354d7e906d4dbd30d133affce711449801f16b58ff1c6b2ddf327
+OPERATOR_AUTH_KEY=ce87c003337354d7e906d4dbd30d133affce711449801f16b58ff1c6b2ddf327
 ```
 
 ### 3. Deploy Infrastructure (Privacy Node)
@@ -214,6 +222,25 @@ Or test manually:
 ```bash
 node scripts/dailyRebalancer.js
 ```
+
+## Network Configuration
+
+### Privacy Node Configuration
+- **RPC URL**: `https://privacy-node-5.rayls.com`
+- **Chain ID**: `800005`
+- **Deployment Proxy Registry**: `0x75Da1758161588FD2ccbFd23AB87f373b0f73c8F`
+
+### Backend API Configuration
+- **Backend URL**: `https://rayls-backend-privacy-node-5.rayls.com`
+- **User Auth Key**: `ce87c003337354d7e906d4dbd30d133affce711449801f16b58ff1c6b2ddf327`
+- **Operator Auth Key**: `ce87c003337354d7e906d4dbd30d133affce711449801f16b58ff1c6b2ddf327`
+
+### Public Chain Configuration
+- **Network**: Rayls Testnet
+- **Chain ID**: `7295799`
+- **RPC Endpoint**: `https://testnet-rpc.rayls.com`
+- **Explorer**: `https://testnet-explorer.rayls.com`
+- **Gas Token**: USDr
 
 ## Usage
 

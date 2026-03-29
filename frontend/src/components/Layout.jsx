@@ -9,7 +9,8 @@ import {
   LogOut,
   Key,
   ArrowRight,
-  Cpu
+  Cpu,
+  ArrowUpDown
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -31,6 +32,7 @@ const Layout = ({ children }) => {
     { path: '/agents', label: 'Agents', icon: Wallet },
     { path: '/intents', label: 'Intents', icon: FileText },
     { path: '/lending', label: 'Lending', icon: ArrowRight },
+    { path: '/bridge', label: 'Bridge', icon: ArrowUpDown },
     { path: '/tee-demo', label: 'TEE Demo', icon: Cpu },
     { path: '/policies', label: 'Policies', icon: Shield },
     { path: '/admin', label: 'Admin', icon: Settings },

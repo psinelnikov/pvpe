@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { Web3Provider } from './contexts/Web3Context';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -9,6 +10,7 @@ import Policies from './pages/Policies';
 import Admin from './pages/Admin';
 import Lending from './pages/Lending';
 import TEEDemo from './pages/TEEDemo';
+import Bridge from './pages/Bridge';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -24,8 +26,9 @@ function ProtectedRoute({ children }) {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Web3Provider>
+      <AuthProvider>
+        <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route
@@ -89,6 +92,16 @@ function App() {
             }
           />
           <Route
+            path="/bridge"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Bridge />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/admin"
             element={
               <ProtectedRoute>
@@ -101,6 +114,7 @@ function App() {
         </Routes>
       </Router>
     </AuthProvider>
+    </Web3Provider>
   );
 }
 

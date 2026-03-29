@@ -11,11 +11,18 @@ export const formatAmount = (amount, decimals = 6) => {
 
 export const formatUSD = (amount) => {
   if (amount === null || amount === undefined) return '$0.00';
-  const num = parseFloat(amount) / 10 ** 6;
+  const num = parseFloat(amount);
+  
+  // Handle very small numbers
+  if (num < 0.01 && num > 0) {
+    return `$${num.toFixed(6)}`;
+  }
+  
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(num);
 };
 
