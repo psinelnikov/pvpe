@@ -75,7 +75,7 @@ export default function Login() {
             </button>
           </div>
 
-          <h2 className="text-2xl font-bold text-center text-white mb-6">
+          <h2 className="text-2xl font-bold text-white mb-6 text-left">
             {mode === 'existing' ? 'Login with API Key' : 'Create New API Key'}
           </h2>
 
@@ -143,7 +143,7 @@ export default function Login() {
             </form>
           )}
 
-          <p className="mt-6 text-center text-sm text-gray-400">
+          <p className="mt-6 text-sm text-gray-400 text-left">
             Rayls Private Vault Policy Engine
           </p>
         </div>

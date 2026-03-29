@@ -26,30 +26,36 @@ export default function Policies() {
   if (loading) return <Loading />;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-white mb-8">Policies</h1>
-      <div className="bg-gray-800 rounded-lg border border-gray-700">
-        <div className="p-6">
-          {policies.length > 0 ? (
-            <div className="space-y-3">
-              {policies.map((policy, i) => (
-                <div key={i} className="p-4 bg-gray-700 rounded-lg">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-white font-medium">{policy.name}</h3>
+    <main>
+      <div style={{maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem'}}>
+        <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'white', margin: '0 0 4px'}}>Policies</h1>
+        <p style={{color: '#9ca3af', margin: '0 0 2rem'}}>Manage lending and compliance policies</p>
+        <div style={{background: '#1f2937', borderRadius: '12px', border: '1px solid #374151', padding: '1.5rem'}}>
+          <div style={{padding: '1.5rem'}}>
+            {policies.length > 0 ? (
+              <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                {policies.map((policy, i) => (
+                  <div key={i} style={{background: '#111827', borderRadius: '8px', padding: '16px', border: '1px solid #1f2937'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
+                      <h3 style={{color: 'white', fontSize: '14px', fontWeight: '500', margin: '0'}}>{policy.name}</h3>
+                    </div>
+                    <p style={{color: '#6b7280', fontSize: '12px', margin: '0 0 8px'}}>{policy.policyId}</p>
+                    <div style={{display: 'flex', gap: '12px', fontSize: '12px', color: '#6b7280'}}>
+                      <span>Limit: {policy.perTxLimit}</span>
+                      <span>Daily: {policy.dailyLimit}</span>
+                      <span>Status: {policy.status}</span>
+                    </div>
                   </div>
-                  <p className="text-gray-400 text-sm mb-2">{policy.policyId}</p>
-                  <div className="flex gap-4 text-sm text-gray-300">
-                    <span>Per-Tx: {formatUSD(policy.perTxLimit)}</span>
-                    <span>Daily: {formatUSD(policy.dailyLimit)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-400 text-center py-8">No policies configured</p>
-          )}
+                ))}
+              </div>
+            ) : (
+              <div style={{textAlign: 'center', padding: '2rem'}}>
+                <p style={{color: '#6b7280', margin: '0'}}>No policies found</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

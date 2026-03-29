@@ -4,10 +4,6 @@ import { Web3Provider } from './contexts/Web3Context';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Agents from './pages/Agents';
-import Intents from './pages/Intents';
-import Policies from './pages/Policies';
-import Admin from './pages/Admin';
 import Lending from './pages/Lending';
 import TEEDemo from './pages/TEEDemo';
 import Bridge from './pages/Bridge';
@@ -42,26 +38,6 @@ function App() {
             }
           />
           <Route
-            path="/agents"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Agents />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/intents"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Intents />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/lending"
             element={
               <ProtectedRoute>
@@ -82,31 +58,11 @@ function App() {
             }
           />
           <Route
-            path="/policies"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Policies />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/bridge"
             element={
               <ProtectedRoute>
                 <Layout>
                   <Bridge />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Admin />
                 </Layout>
               </ProtectedRoute>
             }

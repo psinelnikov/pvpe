@@ -26,44 +26,54 @@ export default function Intents() {
   if (loading) return <Loading />;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-white mb-8">Intents</h1>
-      <div className="bg-gray-800 rounded-lg border border-gray-700">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-700">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Agent</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Purpose</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
-              {intents.length > 0 ? (
-                intents.map((intent, i) => (
-                  <tr key={i} className="bg-gray-800">
-                    <td className="px-6 py-4 text-sm text-white">{intent.intentId?.slice(0, 8)}...</td>
-                    <td className="px-6 py-4 text-sm text-gray-300">{intent.agentId}</td>
-                    <td className="px-6 py-4 text-sm text-white">{formatUSD(intent.amount)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-300">{intent.purposeCode}</td>
-                    <td className="px-6 py-4 text-sm">
-                      <span className={getStatusColor(intent.decisionStatus)}>
-                        {getStatusLabel(intent.decisionStatus)}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="px-6 py-8 text-center text-gray-400">No intents found</td>
+    <main>
+      <div style={{maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem'}}>
+        <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'white', margin: '0 0 4px'}}>Intents</h1>
+        <p style={{color: '#9ca3af', margin: '0 0 2rem'}}>View and manage transaction intents</p>
+        <div style={{background: '#1f2937', borderRadius: '12px', border: '1px solid #374151', padding: '1.5rem'}}>
+          <div style={{overflowX: 'auto'}}>
+            <table style={{width: '100%', borderCollapse: 'collapse'}}>
+              <thead>
+                <tr style={{background: '#111827'}}>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase'}}>ID</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase'}}>Agent</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase'}}>Amount</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase'}}>Purpose</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase'}}>Status</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {intents.length > 0 ? (
+                  intents.map((intent, i) => (
+                    <tr key={i} style={{borderBottom: '1px solid #374151'}}>
+                      <td style={{padding: '12px 16px', fontSize: '14px', color: 'white'}}>{intent.intentId?.slice(0, 8)}...</td>
+                      <td style={{padding: '12px 16px', fontSize: '14px', color: 'white'}}>{intent.agentId}</td>
+                      <td style={{padding: '12px 16px', fontSize: '14px', color: 'white'}}>{intent.amount}</td>
+                      <td style={{padding: '12px 16px', fontSize: '14px', color: 'white'}}>{intent.purposeCode}</td>
+                      <td style={{padding: '12px 16px'}}>
+                        <span style={{
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '12px',
+                          fontWeight: '500',
+                          background: intent.decisionStatus === 'APPROVED' ? '#065f46' : intent.decisionStatus === 'PENDING' ? '#1e3a8a' : '#7f1d1d',
+                          color: intent.decisionStatus === 'APPROVED' ? '#34d399' : intent.decisionStatus === 'PENDING' ? '#60a5fa' : '#f87171'
+                        }}>
+                          {intent.decisionStatus}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" style={{padding: '12px 16px', fontSize: '14px', color: 'white', textAlign: 'center'}}>No intents found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

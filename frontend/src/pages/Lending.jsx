@@ -13,8 +13,8 @@ export default function Lending() {
     deposited: false,
     bridged: false,
     positionOpened: false,
+    yieldReady: false,
     yieldAccrued: false,
-    yieldClaimed: false,
     rebalanced: false,
     navUpdated: false,
   });
@@ -58,7 +58,7 @@ export default function Lending() {
     }
   };
 
-  const handleWaitForBridge = async () => {
+  const handleBridge = async () => {
     setLoading(true);
     try {
       await api.waitForBridge();
@@ -89,11 +89,11 @@ export default function Lending() {
     }
   };
 
-  const handleWaitForYield = async () => {
+  const handleWaitYield = async () => {
     setLoading(true);
     try {
       await api.waitForYieldAccrual();
-      setStatus(prev => ({ ...prev, yieldAccrued: true }));
+      setStatus(prev => ({ ...prev, yieldReady: true }));
       showAlert('success', 'Yield has been accrued (1+ day period)');
     } catch (err) {
       showAlert('error', err.message || 'Yield accrual check failed');
@@ -106,7 +106,7 @@ export default function Lending() {
     setLoading(true);
     try {
       await api.accrueYieldViaPolicy();
-      setStatus(prev => ({ ...prev, yieldClaimed: true }));
+      setStatus(prev => ({ ...prev, yieldAccrued: true }));
       showAlert('success', 'Yield successfully accrued via policy');
     } catch (err) {
       showAlert('error', err.message || 'Failed to accrue yield');
@@ -142,184 +142,237 @@ export default function Lending() {
     }
   };
 
-  const ActionCard = ({ number, title, description, icon: Icon, action, disabled, completed }) => (
-    <div className={`bg-gray-800 rounded-lg border ${completed ? 'border-green-500' : 'border-gray-700'} p-6 relative`}>
-      {completed && (
-        <div className="absolute top-4 right-4">
-          <CheckCircle className="w-6 h-6 text-green-500" />
-        </div>
-      )}
-      <div className="flex items-start gap-4 mb-4">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${completed ? 'bg-green-500/20' : 'bg-indigo-500/20'}`}>
-          <Icon className={`w-5 h-5 ${completed ? 'text-green-400' : 'text-indigo-400'}`} />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-gray-500">#{number}</span>
-            <h3 className="text-lg font-semibold text-white">{title}</h3>
-          </div>
-          <p className="text-sm text-gray-400 mt-1">{description}</p>
-        </div>
-      </div>
-      <button
-        onClick={action}
-        disabled={disabled || loading || completed}
-        className={`w-full py-2 px-4 rounded-lg font-medium transition-all ${
-          completed
-            ? 'bg-green-500/20 text-green-400 cursor-default'
-            : disabled
-            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-        }`}
-      >
-        {loading ? 'Processing...' : completed ? 'Completed' : 'Execute'}
-      </button>
-    </div>
-  );
-
+  const ActionCard = ({ number, title, description, icon: Icon, action, disabled, completed }) => null;
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-white mb-2">Lending Protocol Actions</h1>
-      <p className="text-gray-400 mb-8">Execute the lending workflow step by step</p>
+    <main>
+      <div style={{maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem'}}>
 
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onDismiss={() => setAlert(null)}
-        />
-      )}
+        {/* Header */}
+        <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'white', margin: '0 0 4px'}}>Lending Protocol Actions</h1>
+        <p style={{color: '#9ca3af', margin: '0 0 1.5rem'}}>Execute the lending workflow step by step</p>
 
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-indigo-400" />
+        {alert && (
+          <Alert
+            type={alert.type}
+            message={alert.message}
+            onDismiss={() => setAlert(null)}
+          />
+        )}
+
+        {/* NAV Card */}
+        <div style={{background: '#1f2937', borderRadius: '12px', border: '1px solid #374151', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <div style={{width: '44px', height: '44px', borderRadius: '8px', background: 'rgba(30,64,175,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+              <DollarSign style={{width: '20px', height: '20px', color: '#60a5fa'}} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">PublicVault NAV</h3>
-              <p className="text-sm text-gray-400">Current Net Asset Value</p>
+              <h3 style={{fontSize: '15px', fontWeight: '600', color: 'white', margin: '0 0 2px'}}>PublicVault NAV</h3>
+              <p style={{fontSize: '13px', color: '#6b7280', margin: '0'}}>Current Net Asset Value</p>
             </div>
           </div>
-          <div className="text-right">
-            <p className="text-3xl font-bold text-white">${navValue}</p>
-            <p className="text-sm text-green-400 flex items-center justify-end gap-1">
-              <TrendingUp className="w-4 h-4" />
+          <div style={{textAlign: 'right'}}>
+            <p style={{fontSize: '1.75rem', fontWeight: '700', color: 'white', margin: '0 0 2px'}}>${navValue}</p>
+            <p style={{fontSize: '12px', color: '#34d399', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', margin: '0'}}>
+              <TrendingUp style={{width: '13px', height: '13px'}} />
               Updated
             </p>
           </div>
         </div>
-      </div>
 
-      <div className="space-y-6">
-        <ActionCard
-          number={1}
-          title="Deposit USDC to PublicVault"
-          description="Deposit USDC tokens to the PublicVault on the public chain"
-          icon={Wallet}
-          disabled={!depositAmount}
-          completed={status.deposited}
-          action={handleDeposit}
-        />
-        <div className="bg-gray-800/50 rounded-lg p-4">
-          <label className="block text-sm font-medium text-gray-400 mb-2">Deposit Amount (USDC)</label>
-          <input
-            type="number"
-            value={depositAmount}
-            onChange={(e) => setDepositAmount(e.target.value)}
-            placeholder="Enter amount..."
-            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-        </div>
+        {/* Steps */}
+        <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
 
-        <ActionCard
-          number={2}
-          title="Wait for Bridge to Privacy Node"
-          description="Wait for the assets to be bridged from public chain to privacy node"
-          icon={ArrowRight}
-          disabled={!status.deposited}
-          completed={status.bridged}
-          action={handleWaitForBridge}
-        />
-
-        <ActionCard
-          number={3}
-          title="Open Lending Position"
-          description="Open a lending position between two selected banks"
-          icon={Wallet}
-          disabled={!status.bridged}
-          completed={status.positionOpened}
-          action={handleOpenPosition}
-        />
-        <div className="bg-gray-800/50 rounded-lg p-4 grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Bank A (Lender)</label>
-            <select
-              value={bankA}
-              onChange={(e) => setBankA(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="">Select bank...</option>
-              <option value="bank_alpha">Bank Alpha</option>
-              <option value="bank_beta">Bank Beta</option>
-              <option value="bank_gamma">Bank Gamma</option>
-            </select>
+          {/* Step 1 */}
+          <div style={{background: '#1f2937', borderRadius: '10px 10px 0 0', border: '1px solid #374151', padding: '1.25rem 1.5rem'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem'}}>
+              <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+                <Wallet style={{width: '16px', height: '16px', color: '#818cf8'}} />
+              </div>
+              <div style={{flex: 1}}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                  <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#1</span>
+                  <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Deposit USDC to PublicVault</h3>
+                </div>
+                <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Deposit USDC tokens to the PublicVault on the public chain</p>
+              </div>
+              <button 
+                onClick={handleDeposit}
+                disabled={!depositAmount || loading}
+                style={{padding: '6px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', background: !depositAmount || loading ? '#374151' : '#4f46e5', color: !depositAmount || loading ? '#4b5563' : 'white', border: 'none', cursor: !depositAmount || loading ? 'not-allowed' : 'pointer', flexShrink: 0}}
+              >
+                {loading ? 'Processing...' : 'Execute'}
+              </button>
+            </div>
+            <div style={{background: '#111827', borderRadius: '8px', padding: '12px 16px'}}>
+              <label style={{display: 'block', fontSize: '12px', fontWeight: '500', color: '#6b7280', marginBottom: '6px'}}>Deposit Amount (USDC)</label>
+              <input 
+                type="number" 
+                placeholder="Enter amount..." 
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
+                style={{width: '100%', background: '#1f2937', border: '1px solid #374151', borderRadius: '6px', padding: '8px 12px', color: 'white', fontSize: '13px', boxSizing: 'border-box', outline: 'none'}}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Bank B (Borrower)</label>
-            <select
-              value={bankB}
-              onChange={(e) => setBankB(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+
+          {/* Step 2 */}
+          <div style={{background: '#1f2937', borderRadius: '0', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+              <ArrowRight style={{width: '16px', height: '16px', color: '#818cf8'}} />
+            </div>
+            <div style={{flex: 1}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#2</span>
+                <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Wait for Bridge to Privacy Node</h3>
+              </div>
+              <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Wait for assets to be bridged from public chain to privacy node</p>
+            </div>
+            <button 
+              onClick={handleBridge}
+              disabled={!status.deposited || loading}
+              style={{padding: '6px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', background: !status.deposited || loading ? '#374151' : '#4f46e5', color: !status.deposited || loading ? '#4b5563' : 'white', border: 'none', cursor: !status.deposited || loading ? 'not-allowed' : 'pointer', flexShrink: 0}}
             >
-              <option value="">Select bank...</option>
-              <option value="bank_alpha">Bank Alpha</option>
-              <option value="bank_beta">Bank Beta</option>
-              <option value="bank_gamma">Bank Gamma</option>
-            </select>
+              {loading ? 'Processing...' : 'Execute'}
+            </button>
           </div>
+
+          {/* Step 3 */}
+          <div style={{background: '#1f2937', borderRadius: '0', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem'}}>
+              <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+                <Wallet style={{width: '16px', height: '16px', color: '#818cf8'}} />
+              </div>
+              <div style={{flex: 1}}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                  <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#3</span>
+                  <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Open Lending Position</h3>
+                </div>
+                <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Open a lending position between two selected banks</p>
+              </div>
+              <button 
+                onClick={handleOpenPosition}
+                disabled={!status.bridged || loading}
+                style={{padding: '6px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', background: !status.bridged || loading ? '#374151' : '#4f46e5', color: !status.bridged || loading ? '#4b5563' : 'white', border: 'none', cursor: !status.bridged || loading ? 'not-allowed' : 'pointer', flexShrink: 0}}
+              >
+                {loading ? 'Processing...' : 'Execute'}
+              </button>
+            </div>
+            <div style={{background: '#111827', borderRadius: '8px', padding: '12px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+              <div>
+                <label style={{display: 'block', fontSize: '12px', fontWeight: '500', color: '#6b7280', marginBottom: '6px'}}>Bank A (Lender)</label>
+                <select 
+                  value={bankA}
+                  onChange={(e) => setBankA(e.target.value)}
+                  style={{width: '100%', background: '#1f2937', border: '1px solid #374151', borderRadius: '6px', padding: '8px 12px', color: 'white', fontSize: '13px', boxSizing: 'border-box', outline: 'none'}}
+                >
+                  <option value="">Select bank...</option>
+                  <option value="bank_alpha">Bank Alpha</option>
+                  <option value="bank_beta">Bank Beta</option>
+                  <option value="bank_gamma">Bank Gamma</option>
+                </select>
+              </div>
+              <div>
+                <label style={{display: 'block', fontSize: '12px', fontWeight: '500', color: '#6b7280', marginBottom: '6px'}}>Bank B (Borrower)</label>
+                <select 
+                  value={bankB}
+                  onChange={(e) => setBankB(e.target.value)}
+                  style={{width: '100%', background: '#1f2937', border: '1px solid #374151', borderRadius: '6px', padding: '8px 12px', color: 'white', fontSize: '13px', boxSizing: 'border-box', outline: 'none'}}
+                >
+                  <option value="">Select bank...</option>
+                  <option value="bank_alpha">Bank Alpha</option>
+                  <option value="bank_beta">Bank Beta</option>
+                  <option value="bank_gamma">Bank Gamma</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 4 */}
+          <div style={{background: '#1f2937', borderRadius: '0', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+              <Clock style={{width: '16px', height: '16px', color: '#818cf8'}} />
+            </div>
+            <div style={{flex: 1}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#4</span>
+                <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Wait for Yield Accrual</h3>
+              </div>
+              <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Wait for yield to accrue (minimum 1 day period)</p>
+            </div>
+            <button 
+              onClick={handleWaitYield}
+              disabled={!status.positionOpened || loading}
+              style={{padding: '6px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', background: !status.positionOpened || loading ? '#374151' : '#4f46e5', color: !status.positionOpened || loading ? '#4b5563' : 'white', border: 'none', cursor: !status.positionOpened || loading ? 'not-allowed' : 'pointer', flexShrink: 0}}
+            >
+              {loading ? 'Processing...' : 'Execute'}
+            </button>
+          </div>
+
+          {/* Step 5 */}
+          <div style={{background: '#1f2937', borderRadius: '0', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+              <CheckCircle style={{width: '16px', height: '16px', color: '#818cf8'}} />
+            </div>
+            <div style={{flex: 1}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#5</span>
+                <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Accrue Yield via Policy</h3>
+              </div>
+              <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Execute policy to accrue and claim yield</p>
+            </div>
+            <button 
+              onClick={handleAccrueYield}
+              disabled={!status.yieldReady || loading}
+              style={{padding: '6px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', background: !status.yieldReady || loading ? '#374151' : '#4f46e5', color: !status.yieldReady || loading ? '#4b5563' : 'white', border: 'none', cursor: !status.yieldReady || loading ? 'not-allowed' : 'pointer', flexShrink: 0}}
+            >
+              {loading ? 'Processing...' : 'Execute'}
+            </button>
+          </div>
+
+          {/* Step 6 */}
+          <div style={{background: '#1f2937', borderRadius: '0', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+              <RefreshCw style={{width: '16px', height: '16px', color: '#818cf8'}} />
+            </div>
+            <div style={{flex: 1}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#6</span>
+                <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Run Daily Rebalancer</h3>
+              </div>
+              <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Execute daily rebalancing of positions</p>
+            </div>
+            <button 
+              onClick={handleRebalance}
+              disabled={!status.yieldAccrued || loading}
+              style={{padding: '6px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', background: !status.yieldAccrued || loading ? '#374151' : '#4f46e5', color: !status.yieldAccrued || loading ? '#4b5563' : 'white', border: 'none', cursor: !status.yieldAccrued || loading ? 'not-allowed' : 'pointer', flexShrink: 0}}
+            >
+              {loading ? 'Processing...' : 'Execute'}
+            </button>
+          </div>
+
+          {/* Step 7 */}
+          <div style={{background: '#1f2937', borderRadius: '0 0 10px 10px', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+              <TrendingUp style={{width: '16px', height: '16px', color: '#818cf8'}} />
+            </div>
+            <div style={{flex: 1}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#7</span>
+                <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Verify NAV Updated on PublicVault</h3>
+              </div>
+              <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Verify that NAV has been updated on the public vault</p>
+            </div>
+            <button 
+              onClick={handleVerifyNAV}
+              disabled={!status.rebalanced || loading}
+              style={{padding: '6px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', background: !status.rebalanced || loading ? '#374151' : '#4f46e5', color: !status.rebalanced || loading ? '#4b5563' : 'white', border: 'none', cursor: !status.rebalanced || loading ? 'not-allowed' : 'pointer', flexShrink: 0}}
+            >
+              {loading ? 'Processing...' : 'Execute'}
+            </button>
+          </div>
+
         </div>
-
-        <ActionCard
-          number={4}
-          title="Wait for Yield Accrual"
-          description="Wait for yield to accrue (minimum 1 day period)"
-          icon={Clock}
-          disabled={!status.positionOpened}
-          completed={status.yieldAccrued}
-          action={handleWaitForYield}
-        />
-
-        <ActionCard
-          number={5}
-          title="Accrue Yield via Policy"
-          description="Execute policy to accrue and claim yield"
-          icon={CheckCircle}
-          disabled={!status.yieldAccrued}
-          completed={status.yieldClaimed}
-          action={handleAccrueYield}
-        />
-
-        <ActionCard
-          number={6}
-          title="Run Daily Rebalancer"
-          description="Execute daily rebalancing of positions"
-          icon={RefreshCw}
-          disabled={!status.yieldClaimed}
-          completed={status.rebalanced}
-          action={handleRebalance}
-        />
-
-        <ActionCard
-          number={7}
-          title="Verify NAV Updated on PublicVault"
-          description="Verify that NAV has been updated on the public vault"
-          icon={TrendingUp}
-          disabled={!status.rebalanced}
-          completed={status.navUpdated}
-          action={handleVerifyNAV}
-        />
       </div>
-    </div>
+    </main>
   );
 }

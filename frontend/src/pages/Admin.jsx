@@ -31,45 +31,52 @@ export default function Admin() {
   if (loading) return <Loading />;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-white mb-8">Admin Panel</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-gray-800 rounded-lg border border-gray-700">
-          <h2 className="text-xl font-bold text-white p-6 border-b border-gray-700">API Keys</h2>
-          <div className="p-6">
-            {apiKeys.length > 0 ? (
-              <div className="space-y-3">
-                {apiKeys.map((key, i) => (
-                  <div key={i} className="p-4 bg-gray-700 rounded-lg">
-                    <h3 className="text-white font-medium">{key.name}</h3>
-                    <p className="text-gray-400 text-sm font-mono">{key.key}</p>
-                    <p className="text-gray-400 text-sm">{formatDate(key.createdAt)}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-400 text-center py-8">No API keys</p>
-            )}
+    <main>
+      <div style={{maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem'}}>
+        <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'white', margin: '0 0 4px'}}>Admin Panel</h1>
+        <p style={{color: '#9ca3af', margin: '0 0 2rem'}}>System administration and API key management</p>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '1.5rem'}}>
+          <div style={{background: '#1f2937', borderRadius: '12px', border: '1px solid #374151'}}>
+            <h2 style={{fontSize: '1.25rem', fontWeight: '600', color: 'white', padding: '1.5rem', borderBottom: '1px solid #374151', margin: '0'}}>API Keys</h2>
+            <div style={{padding: '1.5rem'}}>
+              {apiKeys.length > 0 ? (
+                <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                  {apiKeys.map((key, i) => (
+                    <div key={i} style={{background: '#111827', borderRadius: '8px', padding: '16px'}}>
+                      <h3 style={{color: 'white', fontSize: '14px', fontWeight: '500', margin: '0 0 4px'}}>{key.name}</h3>
+                      <p style={{color: '#6b7280', fontSize: '12px', margin: '0', fontFamily: 'monospace'}}>{key.key}</p>
+                      <p style={{color: '#6b7280', fontSize: '12px', margin: '0'}}>{formatDate(key.createdAt)}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{textAlign: 'center', padding: '2rem'}}>
+                  <p style={{color: '#6b7280', margin: '0'}}>No API keys found</p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="bg-gray-800 rounded-lg border border-gray-700">
-          <h2 className="text-xl font-bold text-white p-6 border-b border-gray-700">Audit Log</h2>
-          <div className="p-6">
-            {auditLog.length > 0 ? (
-              <div className="space-y-3">
-                {auditLog.map((log, i) => (
-                  <div key={i} className="p-3 bg-gray-700 rounded-lg text-sm">
-                    <p className="text-white">{log.action}</p>
-                    <p className="text-gray-400 text-xs">{formatDate(log.timestamp)}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-400 text-center py-8">No audit entries</p>
-            )}
+          <div style={{background: '#1f2937', borderRadius: '12px', border: '1px solid #374151'}}>
+            <h2 style={{fontSize: '1.25rem', fontWeight: '600', color: 'white', padding: '1.5rem', borderBottom: '1px solid #374151', margin: '0'}}>Audit Log</h2>
+            <div style={{padding: '1.5rem'}}>
+              {auditLog.length > 0 ? (
+                <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                  {auditLog.map((log, i) => (
+                    <div key={i} style={{background: '#111827', borderRadius: '8px', padding: '16px'}}>
+                      <p style={{color: 'white', fontSize: '14px', margin: '0'}}>{log.action}</p>
+                      <p style={{color: '#6b7280', fontSize: '12px', margin: '0'}}>{formatDate(log.timestamp)}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{textAlign: 'center', padding: '2rem'}}>
+                  <p style={{color: '#6b7280', margin: '0'}}>No audit entries found</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

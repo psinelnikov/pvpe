@@ -25,30 +25,34 @@ export default function Agents() {
   if (loading) return <Loading />;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-white mb-8">Agents</h1>
-      <div className="bg-gray-800 rounded-lg border border-gray-700">
-        <div className="p-6">
-          {agents.length > 0 ? (
-            <div className="space-y-3">
-              {agents.map((agent, i) => (
-                <div key={i} className="p-4 bg-gray-700 rounded-lg">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-white font-medium">{agent.name || agent.agentId}</h3>
-                    <span className={agent.active ? 'text-green-400' : 'text-gray-400'}>
-                      {agent.active ? 'Active' : 'Inactive'}
-                    </span>
+    <main>
+      <div style={{maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem'}}>
+        <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'white', margin: '0 0 4px'}}>Agents</h1>
+        <p style={{color: '#9ca3af', margin: '0 0 2rem'}}>Manage and monitor Rayls Vault agents</p>
+        <div style={{background: '#1f2937', borderRadius: '12px', border: '1px solid #374151', padding: '1.5rem'}}>
+          <div style={{padding: '1.5rem'}}>
+            {agents.length > 0 ? (
+              <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                {agents.map((agent, i) => (
+                  <div key={i} style={{background: '#111827', borderRadius: '8px', padding: '16px'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
+                      <h3 style={{color: 'white', fontSize: '14px', fontWeight: '500', margin: '0'}}>{agent.name || agent.agentId}</h3>
+                      <span style={{color: agent.active ? '#34d399' : '#6b7280', fontSize: '12px', fontWeight: '500'}}>
+                        {agent.active ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                    <p style={{color: '#6b7280', fontSize: '12px', margin: '0'}}>{agent.walletAddr}</p>
                   </div>
-                  <p className="text-gray-400 text-sm">Wallet: {agent.walletAddr}</p>
-                  <p className="text-gray-400 text-sm">Policy: {agent.policyId}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-400 text-center py-8">No agents registered</p>
-          )}
+                ))}
+              </div>
+            ) : (
+              <div style={{textAlign: 'center', padding: '2rem'}}>
+                <p style={{color: '#6b7280', margin: '0'}}>No agents found</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
