@@ -3,9 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useWeb3 } from '../contexts/Web3Context';
 import { 
   LayoutDashboard, 
-  ArrowRight,
-  Cpu,
   ArrowUpDown,
+  Cpu,
   LogOut,
   Key,
   Wallet2
@@ -27,7 +26,6 @@ const Layout = ({ children }) => {
   }
 
   const navItems = [
-    { path: '/lending', label: 'Process', icon: ArrowRight },
     { path: '/bridge', label: 'Bridge', icon: ArrowUpDown },
     { path: '/tee-demo', label: 'TEE Demo', icon: Cpu },
   ];
@@ -41,11 +39,6 @@ const Layout = ({ children }) => {
         </Link>
 
         <div style={{width: '1px', height: '20px', background: '#374151', flexShrink: 0}}></div>
-
-        <Link to="/lending" style={{display: 'flex', alignItems: 'center', gap: '5px', color: '#d1d5db', fontSize: '13px', fontWeight: '500', textDecoration: 'none', padding: '5px 10px', borderRadius: '6px', flexShrink: 0, whiteSpace: 'nowrap'}}>
-          <ArrowRight style={{width: '14px', height: '14px'}} />
-          Process
-        </Link>
 
         <Link to="/bridge" style={{display: 'flex', alignItems: 'center', gap: '5px', color: '#d1d5db', fontSize: '13px', fontWeight: '500', textDecoration: 'none', padding: '5px 10px', borderRadius: '6px', flexShrink: 0, whiteSpace: 'nowrap'}}>
           <ArrowUpDown style={{width: '14px', height: '14px'}} />

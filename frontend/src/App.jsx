@@ -3,7 +3,6 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Web3Provider } from './contexts/Web3Context';
 import Layout from './components/Layout';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
 import Lending from './pages/Lending';
 import TEEDemo from './pages/TEEDemo';
 import Bridge from './pages/Bridge';
@@ -29,16 +28,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route
             path="/"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Dashboard />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/lending"
             element={
               <ProtectedRoute>
                 <Layout>
