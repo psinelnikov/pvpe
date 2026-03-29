@@ -15,9 +15,11 @@ contract PrivacyVaultCoordinator is Ownable {
     error ActionGateRequired();
     error UnauthorizedAgent();
     error InsufficientBalance();
+    error PublicVaultNotSet();
 
     IERC20 public immutable usdcToken;
     IActionGate public actionGate;
+    address public publicVault;
 
     struct LendingPosition {
         uint256 principal;
@@ -56,6 +58,9 @@ contract PrivacyVaultCoordinator is Ownable {
     );
     event NetSettlementUpdated(int256 newAmount);
     event NetSettlementReset();
+    event PublicVaultUpdated(address indexed oldAddress, address indexed newAddress);
+    event DepositReceivedFromPublic(address indexed user, uint256 amount);
+    event SharesMintedOnPublic(address indexed user, uint256 shares);
 
     modifier onlyAuthorizedAgent() {
         if (!authorizedAgents[msg.sender]) revert UnauthorizedAgent();
@@ -72,6 +77,15 @@ contract PrivacyVaultCoordinator is Ownable {
         actionGate = IActionGate(_actionGate);
     }
 
+    function setPublicVault(address _publicVault) external onlyOwner {
+        if (_publicVault == address(0)) revert ZeroAddress();
+        
+        address oldAddress = publicVault;
+        publicVault = _publicVault;
+        
+        emit PublicVaultUpdated(oldAddress, _publicVault);
+    }
+
     function setAuthorizedAgent(address agent, bool authorized) external onlyOwner {
         if (agent == address(0)) revert ZeroAddress();
         authorizedAgents[agent] = authorized;
@@ -80,12 +94,42 @@ contract PrivacyVaultCoordinator is Ownable {
 
     function receiveDeposit(uint256 amount) external onlyAuthorizedAgent {
         if (amount == 0) revert ZeroAmount();
+        if (publicVault == address(0)) revert PublicVaultNotSet();
         
         bool success = usdcToken.transferFrom(msg.sender, address(this), amount);
         require(success, "USDC transfer failed");
         
         netSettlement += int256(amount);
         emit NetSettlementUpdated(netSettlement);
+        emit DepositReceivedFromPublic(msg.sender, amount);
+    }
+
+    function receiveDepositFromPublic(address user, uint256 amount) external onlyAuthorizedAgent {
+        if (amount == 0) revert ZeroAmount();
+        if (publicVault == address(0)) revert PublicVaultNotSet();
+        
+        bool success = usdcToken.transferFrom(msg.sender, address(this), amount);
+        require(success, "USDC transfer failed");
+        
+        netSettlement += int256(amount);
+        emit NetSettlementUpdated(netSettlement);
+        emit DepositReceivedFromPublic(user, amount);
+        
+        // Calculate shares and mint them on the public chain
+        uint256 shares = _calculateSharesForPublicMint(amount);
+        _mintSharesOnPublic(user, shares);
+    }
+
+    function _calculateSharesForPublicMint(uint256 usdcAmount) internal view returns (uint256) {
+        // For now, use 1:1 ratio. In a real implementation, this would consider
+        // the current NAV of the vault
+        return usdcAmount;
+    }
+
+    function _mintSharesOnPublic(address user, uint256 shares) internal {
+        // This would typically involve a cross-chain call to the PublicVault
+        // For now, we emit an event that can be handled by the bridge
+        emit SharesMintedOnPublic(user, shares);
     }
 
     function openLendingPosition(

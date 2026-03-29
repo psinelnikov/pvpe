@@ -10,12 +10,14 @@ contract DeployPublicVault is Script {
         address usdcToken = vm.envAddress("USDC_TOKEN_ADDRESS");
         address owner = vm.envAddress("OWNER_ADDRESS");
         address dailyRebalancer = vm.envAddress("DAILY_REBALANCER_ADDRESS");
+        address privacyCoordinator = vm.envAddress("PRIVACY_COORDINATOR_ADDRESS");
         
         console.log("=== Public Vault Deployment ===");
         console.log("Deployer:", vm.addr(deployerKey));
         console.log("USDC Token:", usdcToken);
         console.log("Owner:", owner);
         console.log("Daily Rebalancer:", dailyRebalancer);
+        console.log("Privacy Coordinator:", privacyCoordinator);
         console.log("");
 
         vm.startBroadcast(deployerKey);
@@ -27,6 +29,10 @@ contract DeployPublicVault is Script {
             dailyRebalancer
         );
         console.log("PublicVault:", address(publicVault));
+
+        console.log("Setting Privacy Coordinator...");
+        publicVault.setPrivacyCoordinator(privacyCoordinator);
+        console.log("Privacy Coordinator set to:", privacyCoordinator);
 
         vm.stopBroadcast();
 

@@ -62,6 +62,27 @@ const PAVEL_ABI = [
   'function teleportAtomic(address to, uint256 id, uint256 amount, uint256 chainId, bytes data)',
 ];
 
+// PublicVault ABI for new cross-chain flow
+const PUBLIC_VAULT_ABI = [
+  'function deposit(uint256 usdcAmount)',
+  'function withdraw(uint256 shares)',
+  'function balanceOf(address account) view returns (uint256)',
+  'function getVaultStats() view returns (uint256 totalAssets, uint256 totalShares, uint256 navPerShare)',
+  'function totalSupply() view returns (uint256)',
+];
+
+// USDC Token ABI (minimal ERC20)
+const USDC_ABI = [
+  'function balanceOf(address owner) view returns (uint256)',
+  'function allowance(address owner, address spender) view returns (uint256)',
+  'function approve(address spender, uint256 amount) returns (bool)',
+  'function transfer(address to, uint256 amount) returns (bool)',
+  'function transferFrom(address from, address to, uint256 amount) returns (bool)',
+  'function decimals() view returns (uint8)',
+  'function symbol() view returns (string)',
+  'function name() view returns (string)',
+];
+
 export function Web3Provider({ children }) {
   const [publicProvider, setPublicProvider] = useState(null);
   const [privateProvider, setPrivateProvider] = useState(null);
@@ -281,6 +302,110 @@ export function Web3Provider({ children }) {
       }
       
       throw new Error(`Mint to vault failed: ${error.message}`);
+    }
+  };
+
+  // NEW: Deposit USDC to PublicVault (triggers cross-chain minting)
+  const depositToVault = async (amount) => {
+    if (!account || !publicSigner) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      // PublicVault contract address - should come from environment
+      const publicVaultAddress = process.env.REACT_APP_PUBLIC_VAULT_ADDRESS || '0x...'; // Replace with actual address
+      
+      // USDC token address - should come from environment
+      const usdcAddress = process.env.REACT_APP_USDC_ADDRESS || '0x...'; // Replace with actual address
+      
+      // Create contract instances
+      const publicVault = new ethers.Contract(publicVaultAddress, PUBLIC_VAULT_ABI, publicSigner);
+      const usdcToken = new ethers.Contract(usdcAddress, USDC_ABI, publicSigner);
+
+      // Convert amount to USDC decimals (6 for USDC)
+      const amountInUSDC = ethers.parseUnits(amount, 6);
+
+      console.log('🏦 Depositing USDC to PublicVault:', {
+        publicVaultAddress,
+        usdcAddress,
+        amount,
+        amountInUSDC: amountInUSDC.toString(),
+        account
+      });
+
+      // Step 1: Approve USDC spending
+      console.log('🔐 Approving USDC spending...');
+      const approveTx = await usdcToken.approve(publicVaultAddress, amountInUSDC);
+      await approveTx.wait();
+      console.log('✅ USDC approved');
+
+      // Step 2: Deposit to PublicVault (this will trigger the cross-chain flow)
+      console.log('📤 Depositing to PublicVault...');
+      const depositTx = await publicVault.deposit(amountInUSDC);
+      console.log('📝 Deposit transaction submitted:', depositTx.hash);
+
+      // Wait for transaction confirmation
+      const receipt = await depositTx.wait();
+      console.log('✅ Deposit transaction confirmed:', receipt);
+
+      return {
+        transactionHash: depositTx.hash,
+        blockNumber: receipt.blockNumber,
+        gasUsed: receipt.gasUsed.toString()
+      };
+
+    } catch (error) {
+      console.error('❌ Failed to deposit to vault:', error);
+      
+      if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        throw new Error('Transaction may fail. Please check your balance and gas fees.');
+      }
+      
+      if (error.message.includes('insufficient funds')) {
+        throw new Error('Insufficient funds for gas fees');
+      }
+      
+      throw new Error(`Deposit to vault failed: ${error.message}`);
+    }
+  };
+
+  // NEW: Get vault shares balance
+  const getVaultShares = async () => {
+    if (!account || !publicProvider) {
+      return '0';
+    }
+
+    try {
+      const publicVaultAddress = process.env.REACT_APP_PUBLIC_VAULT_ADDRESS || '0x...'; // Replace with actual address
+      const publicVault = new ethers.Contract(publicVaultAddress, PUBLIC_VAULT_ABI, publicProvider);
+      
+      const shares = await publicVault.balanceOf(account);
+      return ethers.formatEther(shares);
+    } catch (error) {
+      console.error('❌ Failed to get vault shares:', error);
+      return '0';
+    }
+  };
+
+  // NEW: Get vault statistics
+  const getVaultStats = async () => {
+    if (!publicProvider) {
+      return { totalAssets: '0', totalShares: '0', navPerShare: '1' };
+    }
+
+    try {
+      const publicVaultAddress = process.env.REACT_APP_PUBLIC_VAULT_ADDRESS || '0x...'; // Replace with actual address
+      const publicVault = new ethers.Contract(publicVaultAddress, PUBLIC_VAULT_ABI, publicProvider);
+      
+      const stats = await publicVault.getVaultStats();
+      return {
+        totalAssets: ethers.formatUnits(stats.totalAssets, 6), // USDC has 6 decimals
+        totalShares: ethers.formatEther(stats.totalShares),
+        navPerShare: ethers.formatUnits(stats.navPerShare, 6)
+      };
+    } catch (error) {
+      console.error('❌ Failed to get vault stats:', error);
+      return { totalAssets: '0', totalShares: '0', navPerShare: '1' };
     }
   };
 
@@ -666,6 +791,9 @@ export function Web3Provider({ children }) {
     disconnectWallet,
     bridgeToPrivate,
     mintToVault,
+    depositToVault,
+    getVaultShares,
+    getVaultStats,
     getBalance,
     getContract,
     debugBalance,

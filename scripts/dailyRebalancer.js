@@ -69,7 +69,7 @@ const USDC_ABI = [
     outputs: [{ name: '', type: 'bool' }],
     type: 'function',
   },
-] as const;
+];
 
 const PRIVACY_COORDINATOR_ABI = [
   {
@@ -93,7 +93,14 @@ const PRIVACY_COORDINATOR_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-] as const;
+  {
+    inputs: [{ name: 'user', type: 'address' }, { name: 'amount', type: 'uint256' }],
+    name: 'receiveDepositFromPublic',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];
 
 const PUBLIC_VAULT_ABI = [
   {
@@ -121,7 +128,7 @@ const PUBLIC_VAULT_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
-] as const;
+];
 
 async function testTEEConnection() {
   try {
@@ -200,7 +207,7 @@ async function decideIntent(intentId, policyId = 'pol_rebalancer') {
 
 async function getNetSettlement() {
   const settlement = await privacyClient.readContract({
-    address: PRIVACY_COORDINATOR_ADDRESS as `0x${string}`,
+    address: PRIVACY_COORDINATOR_ADDRESS,
     abi: PRIVACY_COORDINATOR_ABI,
     functionName: 'getNetSettlement',
   });
@@ -209,7 +216,7 @@ async function getNetSettlement() {
 
 async function resetNetSettlement() {
   const hash = await walletClient.writeContract({
-    address: PRIVACY_COORDINATOR_ADDRESS as `0x${string}`,
+    address: PRIVACY_COORDINATOR_ADDRESS,
     abi: PRIVACY_COORDINATOR_ABI,
     functionName: 'resetNetSettlement',
   });
@@ -221,7 +228,7 @@ async function rebalanceAdd(amount) {
   console.log(`Executing rebalanceAdd for ${amount} USDC...`);
   
   const hash = await walletClient.writeContract({
-    address: PUBLIC_VAULT_ADDRESS as `0x${string}`,
+    address: PUBLIC_VAULT_ADDRESS,
     abi: PUBLIC_VAULT_ABI,
     functionName: 'rebalanceAdd',
     args: [BigInt(amount)],
@@ -235,7 +242,7 @@ async function rebalanceRemove(amount) {
   console.log(`Executing rebalanceRemove for ${amount} USDC...`);
   
   const hash = await walletClient.writeContract({
-    address: PUBLIC_VAULT_ADDRESS as `0x${string}`,
+    address: PUBLIC_VAULT_ADDRESS,
     abi: PUBLIC_VAULT_ABI,
     functionName: 'rebalanceRemove',
     args: [BigInt(amount)],
@@ -247,7 +254,7 @@ async function rebalanceRemove(amount) {
 
 async function getVaultStats() {
   const stats = await publicClient.readContract({
-    address: PUBLIC_VAULT_ADDRESS as `0x${string}`,
+    address: PUBLIC_VAULT_ADDRESS,
     abi: PUBLIC_VAULT_ABI,
     functionName: 'getVaultStats',
   });

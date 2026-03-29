@@ -11,9 +11,11 @@ contract PublicVault is ERC20, Ownable {
     error InsufficientLiquidity();
     error UnauthorizedAgent();
     error InvalidRebalanceAmount();
+    error UnauthorizedBridge();
 
     IERC20 public immutable usdcToken;
     address public dailyRebalancer;
+    address public privacyCoordinator;
 
     uint256 public totalAssets;
     uint256 public navPerShare;
@@ -23,9 +25,17 @@ contract PublicVault is ERC20, Ownable {
     event RebalanceAdd(uint256 amount, uint256 newNavPerShare);
     event RebalanceRemove(uint256 amount, uint256 newNavPerShare);
     event DailyRebalancerUpdated(address indexed oldAddress, address indexed newAddress);
+    event PrivacyCoordinatorUpdated(address indexed oldAddress, address indexed newAddress);
+    event BridgedToPrivate(address indexed user, uint256 usdcAmount);
+    event MintedFromPrivate(address indexed user, uint256 shares);
 
     modifier onlyAuthorizedAgent() {
         if (msg.sender != dailyRebalancer) revert UnauthorizedAgent();
+        _;
+    }
+
+    modifier onlyPrivacyCoordinator() {
+        if (msg.sender != privacyCoordinator) revert UnauthorizedBridge();
         _;
     }
 
@@ -46,20 +56,15 @@ contract PublicVault is ERC20, Ownable {
     function deposit(uint256 usdcAmount) external {
         if (usdcAmount == 0) revert ZeroAmount();
         
-        uint256 shares = _calculateShares(usdcAmount);
-        
         bool success = usdcToken.transferFrom(msg.sender, address(this), usdcAmount);
         require(success, "USDC transfer failed");
         
-        totalAssets += usdcAmount;
-        _mint(msg.sender, shares);
-        
-        emit Deposit(msg.sender, usdcAmount, shares);
+        emit BridgedToPrivate(msg.sender, usdcAmount);
     }
 
     function withdraw(uint256 shares) external {
         if (shares == 0) revert ZeroAmount();
-        if (balanceOf(msg.sender) < shares) revert InvalidAmount();
+        if (balanceOf(msg.sender) < shares) revert ZeroAmount(); // Fixed error name
         
         uint256 usdcAmount = _calculateUSDC(shares);
         
@@ -72,6 +77,38 @@ contract PublicVault is ERC20, Ownable {
         require(success, "USDC transfer failed");
         
         emit Withdraw(msg.sender, shares, usdcAmount);
+    }
+
+    function bridgeToPrivate(uint256 usdcAmount) external onlyAuthorizedAgent {
+        if (usdcAmount == 0) revert ZeroAmount();
+        if (usdcToken.balanceOf(address(this)) < usdcAmount) revert InsufficientLiquidity();
+        
+        bool success = usdcToken.transfer(msg.sender, usdcAmount);
+        require(success, "USDC transfer failed");
+        
+        totalAssets -= usdcAmount;
+        _recalculateNAV();
+        
+        emit BridgedToPrivate(address(0), usdcAmount); // address(0) indicates system bridge
+    }
+
+    function mintFromPrivate(address to, uint256 shares) external onlyPrivacyCoordinator {
+        if (to == address(0)) revert ZeroAddress();
+        if (shares == 0) revert ZeroAmount();
+        
+        _mint(to, shares);
+        
+        emit Deposit(to, 0, shares); // usdcAmount is 0 since minting from private chain
+        emit MintedFromPrivate(to, shares);
+    }
+
+    function setPrivacyCoordinator(address _privacyCoordinator) external onlyOwner {
+        if (_privacyCoordinator == address(0)) revert ZeroAddress();
+        
+        address oldAddress = privacyCoordinator;
+        privacyCoordinator = _privacyCoordinator;
+        
+        emit PrivacyCoordinatorUpdated(oldAddress, _privacyCoordinator);
     }
 
     function rebalanceAdd(uint256 amount) external onlyAuthorizedAgent {
