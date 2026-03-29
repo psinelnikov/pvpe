@@ -902,7 +902,7 @@ export default function TEEDemo() {
   // Show Swiss Bank Consortium overview when step = 0
   if (step === 0) {
     return (
-      <main>
+      <main style={{paddingTop: '52px'}}>
         <div style={{maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem'}}>
 
           {/* Header */}
@@ -970,31 +970,81 @@ export default function TEEDemo() {
 
             {/* Section Heading */}
             <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem'}}>
-              <Shield style={{width: '16px', height: '16px', stroke: '#a5b4fc'}} />
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg>
               <h3 style={{color: 'white', fontSize: '15px', fontWeight: '600', margin: '0'}}>Active Bank Policies</h3>
             </div>
 
             {/* Policy Cards Grid */}
             <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '1.5rem'}}>
-              {activeBankPolicies.map((bankPolicy) => (
-                <div key={bankPolicy.id} style={{background: '#111827', borderRadius: '8px', padding: '16px', border: '1px solid #1f2937'}}>
-                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px'}}>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                      <span style={{color: 'white', fontSize: '14px', fontWeight: '600'}}>{bankPolicy.name}</span>
-                      <span style={{fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: bankPolicy.tier === 'CONSERVATIVE' ? '#1e3a5f' : bankPolicy.tier === 'STANDARD' ? '#2e1065' : bankPolicy.tier === 'INSTITUTIONAL' ? '#431407' : '#1f2937', color: bankPolicy.tier === 'CONSERVATIVE' ? '#93c5fd' : bankPolicy.tier === 'STANDARD' ? '#d8b4fe' : bankPolicy.tier === 'INSTITUTIONAL' ? '#fdba74' : '#9ca3af', fontWeight: '500', border: bankPolicy.tier === 'SYSTEM' ? '1px solid #374151' : 'none'}}>
-                        {bankPolicy.tier}
-                      </span>
-                    </div>
-                    <span style={{color: '#34d399', fontSize: '11px', fontWeight: '600'}}>{bankPolicy.status}</span>
+
+              {/* Conservative Bank */}
+              <div style={{background: '#111827', borderRadius: '8px', padding: '16px', border: '1px solid #1f2937'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px'}}>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <span style={{color: 'white', fontSize: '14px', fontWeight: '600'}}>Conservative Bank</span>
+                    <span style={{fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: '#1e3a5f', color: '#93c5fd', fontWeight: '500'}}>CONSERVATIVE</span>
                   </div>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px'}}>
-                    <div style={{fontSize: '12px', color: '#6b7280'}}>Per-Tx Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>{(bankPolicy.perTxLimit / 1000000).toFixed(1)}M USDC</div>
-                    <div style={{fontSize: '12px', color: '#6b7280'}}>Daily Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>{(bankPolicy.dailyLimit / 1000000).toFixed(0)}M USDC</div>
-                    <div style={{fontSize: '12px', color: '#6b7280'}}>Total Volume</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>{bankPolicy.performance.totalVolume}</div>
-                    <div style={{fontSize: '12px', color: '#6b7280'}}>Compliance</div><div style={{fontSize: '12px', color: '#34d399', textAlign: 'right', fontWeight: '500'}}>{bankPolicy.performance.complianceScore}%</div>
-                  </div>
+                  <span style={{color: '#34d399', fontSize: '11px', fontWeight: '600'}}>ACTIVE</span>
                 </div>
-              ))}
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px'}}>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Per-Tx Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>5.0M USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Daily Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>20M USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Total Volume</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>780M USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Compliance</div><div style={{fontSize: '12px', color: '#34d399', textAlign: 'right', fontWeight: '500'}}>99.8%</div>
+                </div>
+              </div>
+
+              {/* Standard Bank */}
+              <div style={{background: '#111827', borderRadius: '8px', padding: '16px', border: '1px solid #1f2937'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px'}}>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <span style={{color: 'white', fontSize: '14px', fontWeight: '600'}}>Standard Bank</span>
+                    <span style={{fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: '#2e1065', color: '#d8b4fe', fontWeight: '500'}}>STANDARD</span>
+                  </div>
+                  <span style={{color: '#34d399', fontSize: '11px', fontWeight: '600'}}>ACTIVE</span>
+                </div>
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px'}}>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Per-Tx Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>10.0M USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Daily Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>50M USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Total Volume</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>2.1B USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Compliance</div><div style={{fontSize: '12px', color: '#34d399', textAlign: 'right', fontWeight: '500'}}>98.5%</div>
+                </div>
+              </div>
+
+              {/* Institutional Bank */}
+              <div style={{background: '#111827', borderRadius: '8px', padding: '16px', border: '1px solid #1f2937'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px'}}>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <span style={{color: 'white', fontSize: '14px', fontWeight: '600'}}>Institutional Bank</span>
+                    <span style={{fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: '#431407', color: '#fdba74', fontWeight: '500'}}>INSTITUTIONAL</span>
+                  </div>
+                  <span style={{color: '#34d399', fontSize: '11px', fontWeight: '600'}}>ACTIVE</span>
+                </div>
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px'}}>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Per-Tx Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>50.0M USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Daily Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>200M USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Total Volume</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>3.4B USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Compliance</div><div style={{fontSize: '12px', color: '#34d399', textAlign: 'right', fontWeight: '500'}}>97.2%</div>
+                </div>
+              </div>
+
+              {/* Daily Rebalancer */}
+              <div style={{background: '#111827', borderRadius: '8px', padding: '16px', border: '1px solid #1f2937'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px'}}>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <span style={{color: 'white', fontSize: '14px', fontWeight: '600'}}>Daily Rebalancer</span>
+                    <span style={{fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: '#1f2937', color: '#9ca3af', fontWeight: '500', border: '1px solid #374151'}}>SYSTEM</span>
+                  </div>
+                  <span style={{color: '#34d399', fontSize: '11px', fontWeight: '600'}}>ACTIVE</span>
+                </div>
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px'}}>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Per-Tx Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>100.0M USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Daily Limit</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>500M USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Total Volume</div><div style={{fontSize: '12px', color: 'white', textAlign: 'right'}}>12.3B USDC</div>
+                  <div style={{fontSize: '12px', color: '#6b7280'}}>Compliance</div><div style={{fontSize: '12px', color: '#34d399', textAlign: 'right', fontWeight: '500'}}>100%</div>
+                </div>
+              </div>
+
             </div>
 
             {/* Action Buttons */}
@@ -1003,17 +1053,18 @@ export default function TEEDemo() {
                 onClick={() => setShowPolicyManager(true)}
                 style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#4f46e5', color: 'white', border: 'none', padding: '10px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer'}}
               >
-                <Shield style={{width: '15px', height: '15px'}} />
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg>
                 Manage Policies
               </button>
               <button 
                 onClick={() => setStep(1)}
                 style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#374151', color: 'white', border: 'none', padding: '10px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer'}}
               >
-                <Play style={{width: '15px', height: '15px'}} />
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path></svg>
                 TEE Demo
               </button>
             </div>
+
           </div>
         </div>
       </main>
@@ -1157,115 +1208,185 @@ export default function TEEDemo() {
   }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-white mb-2">TEE Policy Demo</h1>
-      <p className="text-gray-400 mb-8">Demonstrate TEE policy creation and enforcement flow</p>
+    <main style={{paddingTop: '52px'}}>
+      <div style={{maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem'}}>
 
-      {/* Swiss Bank Consortium Access */}
-      <div className="mb-8">
-        <div className="bg-gradient-to-r from-blue-900 to-purple-900 rounded-lg border border-blue-700 p-6">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-blue-400" />
+        {/* Header */}
+        <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'white', margin: '0 0 4px'}}>TEE Policy Demo</h1>
+        <p style={{color: '#9ca3af', margin: '0 0 1.5rem'}}>Demonstrate TEE policy creation and enforcement flow</p>
+
+        {/* Alert */}
+        {alert && (
+          <Alert
+            type={alert.type}
+            message={alert.message}
+            onDismiss={() => setAlert(null)}
+          />
+        )}
+
+        {/* Swiss Bank Hero Card */}
+        <div style={{background: '#0f172a', borderRadius: '12px', border: '1px solid #1e3a5f', padding: '1.5rem', marginBottom: '1.5rem'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.25rem'}}>
+            <div style={{width: '44px', height: '44px', borderRadius: '8px', background: 'rgba(30,64,175,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 12h4"></path><path d="M10 8h4"></path><path d="M14 21v-3a2 2 0 0 0-4 0v3"></path><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"></path><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"></path></svg>
             </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-white mb-1">Swiss Bank Consortium System</h2>
-              <p className="text-gray-300 text-sm">Private vault lending with TEE-enforced banking policies</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="bg-black/30 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Shield className="w-4 h-4 text-green-400" />
-                <span className="text-green-400 text-sm font-medium">4 Policy Tiers</span>
-              </div>
-              <p className="text-gray-400 text-xs">Conservative, Standard, Institutional, Rebalancer</p>
-            </div>
-            <div className="bg-black/30 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Lock className="w-4 h-4 text-blue-400" />
-                <span className="text-blue-400 text-sm font-medium">TEE-Enforced</span>
-              </div>
-              <p className="text-gray-400 text-xs">All operations require TEE-signed permits</p>
-            </div>
-            <div className="bg-black/30 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-1">
-                <TrendingUp className="w-4 h-4 text-purple-400" />
-                <span className="text-purple-400 text-sm font-medium">18.5B USDC</span>
-              </div>
-              <p className="text-gray-400 text-xs">Total trading volume</p>
+            <div>
+              <h2 style={{fontSize: '16px', fontWeight: '700', color: 'white', margin: '0 0 2px'}}>Swiss Bank Consortium System</h2>
+              <p style={{fontSize: '13px', color: '#9ca3af', margin: '0'}}>Private vault lending with TEE-enforced banking policies</p>
             </div>
           </div>
-          
-          <button
+
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '1.25rem'}}>
+            <div style={{background: 'rgba(0,0,0,0.3)', borderRadius: '8px', padding: '12px 14px'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px'}}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg>
+                <span style={{fontSize: '13px', fontWeight: '600', color: '#4ade80'}}>4 Policy Tiers</span>
+              </div>
+              <p style={{fontSize: '11px', color: '#6b7280', margin: '0'}}>Conservative, Standard, Institutional, Rebalancer</p>
+            </div>
+            <div style={{background: 'rgba(0,0,0,0.3)', borderRadius: '8px', padding: '12px 14px'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px'}}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span style={{fontSize: '13px', fontWeight: '600', color: '#60a5fa'}}>TEE-Enforced</span>
+              </div>
+              <p style={{fontSize: '11px', color: '#6b7280', margin: '0'}}>All operations require TEE-signed permits</p>
+            </div>
+            <div style={{background: 'rgba(0,0,0,0.3)', borderRadius: '8px', padding: '12px 14px'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px'}}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c084fc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 7h6v6"></path><path d="m22 7-8.5 8.5-5-5L2 17"></path></svg>
+                <span style={{fontSize: '13px', fontWeight: '600', color: '#c084fc'}}>18.5B USDC</span>
+              </div>
+              <p style={{fontSize: '11px', color: '#6b7280', margin: '0'}}>Total trading volume</p>
+            </div>
+          </div>
+
+          <button 
             onClick={() => setStep(0)}
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#1d4ed8', color: 'white', border: 'none', padding: '10px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer'}}
           >
-            <Building2 className="w-4 h-4" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 12h4"></path><path d="M10 8h4"></path><path d="M14 21v-3a2 2 0 0 0-4 0v3"></path><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"></path><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"></path></svg>
             Enter Swiss Bank System
           </button>
         </div>
-      </div>
 
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onDismiss={() => setAlert(null)}
-        />
-      )}
+        {/* Step Indicators + Tabs */}
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', gap: '1rem', flexWrap: 'wrap'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '0'}}>
+            <div style={{width: '30px', height: '30px', borderRadius: '50%', background: '#4f46e5', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700'}}>1</div>
+            <div style={{width: '28px', height: '2px', background: '#374151'}}></div>
+            <div style={{width: '30px', height: '30px', borderRadius: '50%', background: '#1f2937', color: '#4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', border: '1px solid #374151'}}>2</div>
+            <div style={{width: '28px', height: '2px', background: '#374151'}}></div>
+            <div style={{width: '30px', height: '30px', borderRadius: '50%', background: '#1f2937', color: '#4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', border: '1px solid #374151'}}>3</div>
+            <div style={{width: '28px', height: '2px', background: '#374151'}}></div>
+            <div style={{width: '30px', height: '30px', borderRadius: '50%', background: '#1f2937', color: '#4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', border: '1px solid #374151'}}>4</div>
+            <div style={{width: '28px', height: '2px', background: '#374151'}}></div>
+            <div style={{width: '30px', height: '30px', borderRadius: '50%', background: '#1f2937', color: '#4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', border: '1px solid #374151'}}>5</div>
+          </div>
 
-      <div className="flex items-center justify-center mb-8">
-        <div className="flex items-center gap-2">
-          {steps.map((s, i) => (
-            <div key={s.number} className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                  s.completed
-                    ? 'bg-green-500 text-white'
-                    : s.current
-                    ? 'bg-indigo-500 text-white'
-                    : 'bg-gray-700 text-gray-400'
-                }`}
-              >
-                {s.completed ? <CheckCircle className="w-4 h-4" /> : s.number}
-              </div>
-              {i < steps.length - 1 && (
-                <div className={`w-8 h-0.5 ${s.completed ? 'bg-green-500' : 'bg-gray-700'}`} />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex justify-center mb-8">
-        <div className="flex gap-2">
-          {steps.map((s) => (
-            <button
-              key={s.number}
-              onClick={() => s.completed || s.current ? setStep(s.number) : null}
-              disabled={!s.completed && !s.current}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                s.current
-                  ? 'bg-indigo-600 text-white'
-                  : s.completed
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-              }`}
+          <div style={{display: 'flex', gap: '6px', flexWrap: 'wrap'}}>
+            <button 
+              onClick={() => setStep(1)}
+              style={{padding: '6px 14px', borderRadius: '7px', fontSize: '12px', fontWeight: '500', background: '#4f46e5', color: 'white', border: 'none', cursor: 'pointer'}}
             >
-              {s.title}
+              Configure TEE
             </button>
-          ))}
+            <button 
+              disabled
+              style={{padding: '6px 14px', borderRadius: '7px', fontSize: '12px', fontWeight: '500', background: '#1f2937', color: '#4b5563', border: 'none', cursor: 'not-allowed'}}
+            >
+              Create Policy
+            </button>
+            <button 
+              disabled
+              style={{padding: '6px 14px', borderRadius: '7px', fontSize: '12px', fontWeight: '500', background: '#1f2937', color: '#4b5563', border: 'none', cursor: 'not-allowed'}}
+            >
+              Create Intent
+            </button>
+            <button 
+              disabled
+              style={{padding: '6px 14px', borderRadius: '7px', fontSize: '12px', fontWeight: '500', background: '#1f2937', color: '#4b5563', border: 'none', cursor: 'not-allowed'}}
+            >
+              TEE Decision
+            </button>
+            <button 
+              disabled
+              style={{padding: '6px 14px', borderRadius: '7px', fontSize: '12px', fontWeight: '500', background: '#1f2937', color: '#4b5563', border: 'none', cursor: 'not-allowed'}}
+            >
+              Result
+            </button>
+          </div>
         </div>
-      </div>
 
-      {step === 1 && renderStep1()}
-      {step === 2 && renderStep2()}
-      {step === 3 && renderStep3()}
-      {step === 4 && renderStep4()}
-      {decision && step === 4 && setStep(5)}
-      {step === 5 && renderStep5()}
-    </div>
+        {/* Step 1 Card */}
+        <div style={{background: '#1f2937', borderRadius: '12px', border: '1px solid #374151', padding: '1.5rem'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.25rem'}}>
+            <div style={{width: '44px', height: '44px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </div>
+            <div>
+              <h2 style={{fontSize: '15px', fontWeight: '700', color: 'white', margin: '0 0 2px'}}>Step 1: Configure TEE Signer</h2>
+              <p style={{fontSize: '13px', color: '#6b7280', margin: '0'}}>Set up the Trusted Execution Environment signer</p>
+            </div>
+          </div>
+
+          <div style={{display: 'flex', flexDirection: 'column', gap: '14px'}}>
+            <div>
+              <label style={{display: 'block', fontSize: '12px', fontWeight: '500', color: '#9ca3af', marginBottom: '6px'}}>Signer Mode</label>
+              <select 
+                defaultValue={teeConfig?.mode || 'mock'}
+                style={{width: '100%', background: '#111827', border: '1px solid #374151', borderRadius: '8px', padding: '9px 12px', color: 'white', fontSize: '13px', boxSizing: 'border-box', outline: 'none'}}
+              >
+                <option value="mock">Mock Mode (Testing)</option>
+                <option value="fcc">FCC Mode (Production TEE)</option>
+              </select>
+            </div>
+            <div>
+              <label style={{display: 'block', fontSize: '12px', fontWeight: '500', color: '#9ca3af', marginBottom: '6px'}}>TEE Endpoint</label>
+              <input 
+                type="text" 
+                defaultValue={teeConfig?.endpoint || 'http://localhost:8001'}
+                placeholder="https://tee-service.example.com:8001" 
+                style={{width: '100%', background: '#111827', border: '1px solid #374151', borderRadius: '8px', padding: '9px 12px', color: 'white', fontSize: '13px', fontFamily: 'monospace', boxSizing: 'border-box', outline: 'none'}}
+              />
+            </div>
+            <div>
+              <label style={{display: 'block', fontSize: '12px', fontWeight: '500', color: '#9ca3af', marginBottom: '6px'}}>TEE Code Hash</label>
+              <input 
+                type="text" 
+                defaultValue={teeConfig?.codeHash || '0x' + 'a'.repeat(64)}
+                placeholder="0x..." 
+                style={{width: '100%', background: '#111827', border: '1px solid #374151', borderRadius: '8px', padding: '9px 12px', color: 'white', fontSize: '13px', fontFamily: 'monospace', boxSizing: 'border-box', outline: 'none'}}
+              />
+            </div>
+            <div style={{display: 'flex', gap: '10px'}}>
+              <button 
+                onClick={handleTestConnection}
+                disabled={loading}
+                style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', background: '#374151', color: 'white', border: 'none', padding: '10px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '500', cursor: loading ? 'not-allowed' : 'pointer'}}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>
+                Test Connection
+              </button>
+              <button 
+                onClick={handleConfigureTEE}
+                disabled={loading}
+                style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', background: '#4f46e5', color: 'white', border: 'none', padding: '10px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer'}}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect><rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect><line x1="6" x2="6.01" y1="6" y2="6"></line><line x1="6" x2="6.01" y1="18" y2="18"></line></svg>
+                Configure TEE
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Render other steps based on current step */}
+        {step === 2 && renderStep2()}
+        {step === 3 && renderStep3()}
+        {step === 4 && renderStep4()}
+        {decision && step === 4 && setStep(5)}
+        {step === 5 && renderStep5()}
+
+      </div>
+    </main>
   );
 }
