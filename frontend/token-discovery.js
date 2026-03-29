@@ -1,5 +1,5 @@
 // Token Discovery Script
-// Helps find the correct token address for USDr/USDC
+// Helps find the correct token address for PAVEL/USDC
 
 import { ethers } from 'ethers';
 
@@ -10,7 +10,7 @@ const PRIVATE_CHAIN_RPC = 'https://privacy-node-5.rayls.com';
 const POSSIBLE_TOKEN_ADDRESSES = [
   // USDC on Rayls Testnet (replace with actual address)
   '0x1234567890123456789012345678901234567890',
-  // USDr native token (if it exists as a contract)
+  // PAVEL native token (if it exists as a contract)
   '0x0987654321098765432109876543210987654321',
   // Add other potential addresses here
 ];

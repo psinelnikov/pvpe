@@ -27,7 +27,7 @@ const Layout = ({ children }) => {
   }
 
   const navItems = [
-    { path: '/lending', label: 'Lending', icon: ArrowRight },
+    { path: '/lending', label: 'Process', icon: ArrowRight },
     { path: '/bridge', label: 'Bridge', icon: ArrowUpDown },
     { path: '/tee-demo', label: 'TEE Demo', icon: Cpu },
   ];
@@ -44,7 +44,7 @@ const Layout = ({ children }) => {
 
         <Link to="/lending" style={{display: 'flex', alignItems: 'center', gap: '5px', color: '#d1d5db', fontSize: '13px', fontWeight: '500', textDecoration: 'none', padding: '5px 10px', borderRadius: '6px', flexShrink: 0, whiteSpace: 'nowrap'}}>
           <ArrowRight style={{width: '14px', height: '14px'}} />
-          Lending
+          Process
         </Link>
 
         <Link to="/bridge" style={{display: 'flex', alignItems: 'center', gap: '5px', color: '#d1d5db', fontSize: '13px', fontWeight: '500', textDecoration: 'none', padding: '5px 10px', borderRadius: '6px', flexShrink: 0, whiteSpace: 'nowrap'}}>

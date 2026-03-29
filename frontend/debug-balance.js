@@ -1,4 +1,4 @@
-// Debug USDr Balance Script
+// Debug PAVEL Balance Script
 // Run this in browser console or as a standalone script
 
 import { ethers } from 'ethers';
@@ -8,7 +8,7 @@ const PUBLIC_CHAIN_RPC = 'https://testnet-rpc.rayls.com';
 const PRIVATE_CHAIN_RPC = 'https://privacy-node-5.rayls.com';
 
 async function debugBalance() {
-  console.log('🔍 Debugging USDr Balance Issue');
+  console.log('🔍 Debugging PAVEL Balance Issue');
   console.log('==================================');
   
   // Test 1: Direct provider connection
@@ -42,25 +42,25 @@ async function debugBalance() {
     const publicBalance = await publicProvider.getBalance(WALLET_ADDRESS);
     const publicBalanceFormatted = ethers.formatEther(publicBalance);
     console.log(`Raw: ${publicBalance.toString()}`);
-    console.log(`Formatted: ${publicBalanceFormatted} USDr`);
+    console.log(`Formatted: ${publicBalanceFormatted} PAVEL`);
     
     // Test 4: Get native balance on private chain
     console.log('\n💰 Testing private chain balance...');
     const privateBalance = await privateProvider.getBalance(WALLET_ADDRESS);
     const privateBalanceFormatted = ethers.formatEther(privateBalance);
     console.log(`Raw: ${privateBalance.toString()}`);
-    console.log(`Formatted: ${privateBalanceFormatted} USDr`);
+    console.log(`Formatted: ${privateBalanceFormatted} PAVEL`);
     
     // Test 5: Check if balance is actually 0.5
     console.log('\n🔍 Balance Analysis:');
     if (parseFloat(publicBalanceFormatted) > 0) {
-      console.log(`✅ Found balance: ${publicBalanceFormatted} USDr on public chain`);
+      console.log(`✅ Found balance: ${publicBalanceFormatted} PAVEL on public chain`);
     } else {
       console.log('❌ No balance found on public chain');
     }
     
     if (parseFloat(privateBalanceFormatted) > 0) {
-      console.log(`✅ Found balance: ${privateBalanceFormatted} USDr on private chain`);
+      console.log(`✅ Found balance: ${privateBalanceFormatted} PAVEL on private chain`);
     } else {
       console.log('❌ No balance found on private chain');
     }
@@ -84,7 +84,7 @@ async function debugBalance() {
 
 // Browser console version (run this directly in browser console)
 function browserDebugBalance() {
-  console.log('🔍 Browser Debug - USDr Balance');
+  console.log('🔍 Browser Debug - PAVEL Balance');
   console.log('==============================');
   
   // Get the Web3Context from the React app (if available)
@@ -96,7 +96,7 @@ function browserDebugBalance() {
     if (account && publicProvider) {
       publicProvider.getBalance(account).then(balance => {
         const formatted = ethers.formatEther(balance);
-        console.log(`Public balance: ${formatted} USDr`);
+        console.log(`Public balance: ${formatted} PAVEL`);
       }).catch(err => {
         console.error('Failed to get public balance:', err);
       });
@@ -105,7 +105,7 @@ function browserDebugBalance() {
     if (account && privateProvider) {
       privateProvider.getBalance(account).then(balance => {
         const formatted = ethers.formatEther(balance);
-        console.log(`Private balance: ${formatted} USDr`);
+        console.log(`Private balance: ${formatted} PAVEL`);
       }).catch(err => {
         console.error('Failed to get private balance:', err);
       });

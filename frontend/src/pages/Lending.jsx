@@ -287,27 +287,6 @@ export default function Lending() {
             </div>
           </div>
 
-          {/* Step 4 */}
-          <div style={{background: '#1f2937', borderRadius: '0', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px'}}>
-            <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
-              <Clock style={{width: '16px', height: '16px', color: '#818cf8'}} />
-            </div>
-            <div style={{flex: 1}}>
-              <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#4</span>
-                <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Wait for Yield Accrual</h3>
-              </div>
-              <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Wait for yield to accrue (minimum 1 day period)</p>
-            </div>
-            <button 
-              onClick={handleWaitYield}
-              disabled={!status.positionOpened || loading}
-              style={{padding: '6px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', background: !status.positionOpened || loading ? '#374151' : '#4f46e5', color: !status.positionOpened || loading ? '#4b5563' : 'white', border: 'none', cursor: !status.positionOpened || loading ? 'not-allowed' : 'pointer', flexShrink: 0}}
-            >
-              {loading ? 'Processing...' : 'Execute'}
-            </button>
-          </div>
-
           {/* Step 5 */}
           <div style={{background: '#1f2937', borderRadius: '0', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px'}}>
             <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
@@ -315,7 +294,7 @@ export default function Lending() {
             </div>
             <div style={{flex: 1}}>
               <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#5</span>
+                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#4</span>
                 <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Accrue Yield via Policy</h3>
               </div>
               <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Execute policy to accrue and claim yield</p>
@@ -329,14 +308,14 @@ export default function Lending() {
             </button>
           </div>
 
-          {/* Step 6 */}
+          {/* Step 5 */}
           <div style={{background: '#1f2937', borderRadius: '0', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px'}}>
             <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
               <RefreshCw style={{width: '16px', height: '16px', color: '#818cf8'}} />
             </div>
             <div style={{flex: 1}}>
               <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#6</span>
+                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#5</span>
                 <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Run Daily Rebalancer</h3>
               </div>
               <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Execute daily rebalancing of positions</p>
@@ -350,14 +329,14 @@ export default function Lending() {
             </button>
           </div>
 
-          {/* Step 7 */}
+          {/* Step 6 */}
           <div style={{background: '#1f2937', borderRadius: '0 0 10px 10px', border: '1px solid #374151', borderTop: 'none', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '12px'}}>
             <div style={{width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
               <TrendingUp style={{width: '16px', height: '16px', color: '#818cf8'}} />
             </div>
             <div style={{flex: 1}}>
               <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#7</span>
+                <span style={{fontSize: '11px', fontFamily: 'monospace', color: '#4b5563'}}>#6</span>
                 <h3 style={{fontSize: '14px', fontWeight: '600', color: 'white', margin: '0'}}>Verify NAV Updated on PublicVault</h3>
               </div>
               <p style={{fontSize: '12px', color: '#6b7280', margin: '2px 0 0'}}>Verify that NAV has been updated on the public vault</p>

@@ -1,5 +1,5 @@
 // Bridge Test Script
-// This script helps test the USDr bridge functionality
+// This script helps test the PAVEL bridge functionality
 
 import { ethers } from 'ethers';
 
@@ -9,8 +9,8 @@ const PRIVATE_CHAIN_RPC = 'https://privacy-node-5.rayls.com';
 const PUBLIC_CHAIN_ID = 7295799;
 const PRIVATE_CHAIN_ID = 800005;
 
-// USDr Token ABI (minimal)
-const USDR_ABI = [
+// PAVEL Token ABI (minimal)
+const PAVEL_ABI = [
   'function balanceOf(address owner) view returns (uint256)',
   'function allowance(address owner, address spender) view returns (uint256)',
   'function approve(address spender, uint256 amount) returns (bool)',
@@ -21,7 +21,7 @@ const USDR_ABI = [
 ];
 
 async function testBridge() {
-  console.log('🚀 Testing USDr Bridge Functionality');
+  console.log('🚀 Testing PAVEL Bridge Functionality');
   console.log('=====================================');
 
   // Initialize providers
@@ -39,13 +39,13 @@ async function testBridge() {
     const privateBlockNumber = await privateProvider.getBlockNumber();
     console.log(`✅ Private chain connected. Block: ${privateBlockNumber}`);
 
-    // Example token address (replace with actual USDr token address)
+    // Example token address (replace with actual PAVEL token address)
     const TOKEN_ADDRESS = '0x1234567890123456789012345678901234567890'; // Replace with actual address
 
     if (TOKEN_ADDRESS !== '0x1234567890123456789012345678901234567890') {
       console.log('🪙 Testing token contract interaction...');
       
-      const tokenContract = new ethers.Contract(TOKEN_ADDRESS, USDR_ABI, publicProvider);
+      const tokenContract = new ethers.Contract(TOKEN_ADDRESS, PAVEL_ABI, publicProvider);
       
       try {
         const symbol = await tokenContract.symbol();
@@ -56,10 +56,10 @@ async function testBridge() {
         console.log(`📊 Decimals: ${decimals}`);
       } catch (err) {
         console.log('❌ Token contract not found or not accessible');
-        console.log('   Please update TOKEN_ADDRESS with the actual USDr token address');
+        console.log('   Please update TOKEN_ADDRESS with the actual PAVEL token address');
       }
     } else {
-      console.log('⚠️  Please update TOKEN_ADDRESS in the script with the actual USDr token address');
+      console.log('⚠️  Please update TOKEN_ADDRESS in the script with the actual PAVEL token address');
     }
 
     console.log('\n🔗 Bridge Configuration:');
@@ -88,7 +88,7 @@ console.log('2. Open http://localhost:5174 in your browser');
 console.log('3. Login to the application');
 console.log('4. Navigate to the Bridge page');
 console.log('5. Connect your wallet (MetaMask)');
-console.log('6. Enter the USDr token address');
+console.log('6. Enter the PAVEL token address');
 console.log('7. Specify amount and recipient');
 console.log('8. Execute the bridge transaction');
 console.log('');

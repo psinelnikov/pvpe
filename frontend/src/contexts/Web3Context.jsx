@@ -19,8 +19,8 @@ export const CHAINS = {
     rpcUrls: ['https://testnet-rpc.rayls.com'],
     nativeRpcUrl: 'https://testnet-rpc.rayls.com',
     nativeCurrency: {
-      name: 'USDr',
-      symbol: 'USDr',
+      name: 'PAVEL',
+      symbol: 'PAVEL',
       decimals: 18,
     },
     blockExplorerUrls: ['https://testnet-explorer.rayls.com'],
@@ -30,15 +30,15 @@ export const CHAINS = {
     chainName: 'Rayls Privacy Node',
     rpcUrls: ['https://privacy-node-5.rayls.com'],
     nativeCurrency: {
-      name: 'USDr',
-      symbol: 'USDr',
+      name: 'PAVEL',
+      symbol: 'PAVEL',
       decimals: 18,
     },
   },
 };
 
-// USDr Token ABI (minimal ERC20 + bridge functions)
-const USDR_ABI = [
+// PAVEL Token ABI (minimal ERC20 + bridge functions)
+const PAVEL_ABI = [
   // ERC20 functions
   'function balanceOf(address owner) view returns (uint256)',
   'function allowance(address owner, address spender) view returns (uint256)',
@@ -190,11 +190,11 @@ export function Web3Provider({ children }) {
     const provider = chain === 'PUBLIC' ? publicProvider : privateProvider;
     const signer = chain === 'PUBLIC' ? publicSigner : privateSigner;
     
-    if (!provider) {
-      throw new Error(`${chain} provider not available`);
+    if (!provider || !signer) {
+      throw new Error(`${chain} provider or signer not available`);
     }
 
-    return new ethers.Contract(tokenAddress, USDR_ABI, provider);
+    return new ethers.Contract(tokenAddress, PAVEL_ABI, signer);
   };
 
   // Get token contract with signer for transactions
@@ -206,10 +206,84 @@ export function Web3Provider({ children }) {
       throw new Error(`${chain} provider or signer not available`);
     }
 
-    return new ethers.Contract(tokenAddress, USDR_ABI, signer);
+    return new ethers.Contract(tokenAddress, PAVEL_ABI, signer);
   };
 
-  // Bridge USDr from public to private chain
+  // Generic getContract function for external use
+  const getContract = (address, abi, chain = 'PUBLIC') => {
+    const provider = chain === 'PUBLIC' ? publicProvider : privateProvider;
+    const signer = chain === 'PUBLIC' ? publicSigner : privateSigner;
+    
+    if (!provider || !signer) {
+      throw new Error(`${chain} provider or signer not available`);
+    }
+
+    return new ethers.Contract(address, abi, signer);
+  };
+
+  // Bridge PAVEL from public to private chain
+  const mintToVault = async (tokenAddress, amount) => {
+    if (!account || !publicProvider) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      // Get the YieldVault contract address
+      const vaultAddress = '0x7e5c367489A86DC1eb4A5D54F13c71d15eFA58af';
+      
+      // Create contract instance for YieldVault
+      const vaultContract = new ethers.Contract(
+        vaultAddress,
+        [
+          'function mint(address to, uint256 amount)',
+          'function balanceOf(address account) view returns (uint256)',
+          'function totalSupply() view returns (uint256)'
+        ],
+        publicSigner
+      );
+
+      // Convert amount to wei (assuming 18 decimals)
+      const amountInWei = ethers.parseUnits(amount, 18);
+
+      console.log('🏦 Minting to vault:', {
+        vaultAddress,
+        tokenAddress,
+        amount,
+        amountInWei: amountInWei.toString(),
+        account
+      });
+
+      // Call mint function on vault contract
+      const tx = await vaultContract.mint(account, amountInWei);
+      
+      console.log('📝 Mint transaction submitted:', tx.hash);
+      
+      // Wait for transaction confirmation
+      const receipt = await tx.wait();
+      
+      console.log('✅ Mint transaction confirmed:', receipt);
+      
+      return {
+        transactionHash: tx.hash,
+        blockNumber: receipt.blockNumber,
+        gasUsed: receipt.gasUsed.toString()
+      };
+
+    } catch (error) {
+      console.error('❌ Failed to mint to vault:', error);
+      
+      if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        throw new Error('Transaction may fail. Please check your balance and gas fees.');
+      }
+      
+      if (error.message.includes('insufficient funds')) {
+        throw new Error('Insufficient funds for gas fees');
+      }
+      
+      throw new Error(`Mint to vault failed: ${error.message}`);
+    }
+  };
+
   const bridgeToPrivate = async (tokenAddress, amount, recipient) => {
     if (!publicSigner) {
       throw new Error('Wallet not connected');
@@ -218,17 +292,17 @@ export function Web3Provider({ children }) {
     try {
       const amountWei = ethers.parseEther(amount.toString());
       
-      // Handle native USDr bridging vs ERC20 token bridging
+      // Handle native PAVEL bridging vs ERC20 token bridging
       if (!tokenAddress) {
-        // Native USDr bridging using teleport function
-        console.log('🪙 Bridging native USDr token');
+        // Native PAVEL bridging using teleport function
+        console.log('🪙 Bridging native PAVEL token');
         
         // Use the Public Mirror contract from the integration guide
         const publicMirrorAddress = "0x4Ad3F180D8c5fB1Cdfd6dbed5Cc1fFa5432d30F9";
         const yieldVaultAddress = "0x7e5c367489A86DC1eb4A5D54F13c71d15eFA58af";
         const privacyChainId = 800005;
         
-        console.log('🚀 Bridging native USDr via Public Mirror contract');
+        console.log('🚀 Bridging native PAVEL via Public Mirror contract');
         
         // Get the Public Mirror contract
         const publicMirror = getTokenContractWithSigner(publicMirrorAddress, 'PUBLIC');
@@ -241,19 +315,23 @@ export function Web3Provider({ children }) {
         );
         
         await tx.wait();
-        console.log('✅ Native USDr bridge transaction confirmed:', tx.hash);
-        return tx.hash;
+        console.log('✅ Native PAVEL bridge transaction confirmed:', tx.hash);
+        return {
+          transactionHash: tx.hash,
+          blockNumber: tx.blockNumber || 'pending',
+          gasUsed: tx.gasLimit?.toString() || 'unknown'
+        };
         
       } else if (tokenAddress.toLowerCase() === '0x75da1758161588fd2ccbfd23ab87f373b0f73c8f'.toLowerCase()) {
-        // Deployment proxy registry - handles native USDr bridging
-        console.log('🪙 Bridging native USDr via deployment proxy registry');
+        // Deployment proxy registry - handles native PAVEL bridging
+        console.log('🪙 Bridging native PAVEL via deployment proxy registry');
         
         // Use the Public Mirror contract instead
         const publicMirrorAddress = "0x4Ad3F180D8c5fB1Cdfd6dbed5Cc1fFa5432d30F9";
         const yieldVaultAddress = "0x7e5c367489A86DC1eb4A5D54F13c71d15eFA58af";
         const privacyChainId = 800005;
         
-        console.log('🚀 Using Public Mirror contract for native USDr bridging');
+        console.log('🚀 Using Public Mirror contract for native PAVEL bridging');
         
         const publicMirror = getTokenContractWithSigner(publicMirrorAddress, 'PUBLIC');
         
@@ -264,8 +342,12 @@ export function Web3Provider({ children }) {
         );
         
         await tx.wait();
-        console.log('✅ Native USDr bridge transaction confirmed:', tx.hash);
-        return tx.hash;
+        console.log('✅ Native PAVEL bridge transaction confirmed:', tx.hash);
+        return {
+          transactionHash: tx.hash,
+          blockNumber: tx.blockNumber || 'pending',
+          gasUsed: tx.gasLimit?.toString() || 'unknown'
+        };
         
       } else {
         // ERC20 token bridging - check if it's PAVEL token or YieldToken
@@ -298,7 +380,11 @@ export function Web3Provider({ children }) {
           );
           await tx.wait();
           console.log('✅ PAVEL token bridge transaction confirmed:', tx.hash);
-          return tx.hash;
+          return {
+            transactionHash: tx.hash,
+            blockNumber: tx.blockNumber || 'pending',
+            gasUsed: tx.gasLimit?.toString() || 'unknown'
+          };
           
         } else {
           // For YieldToken and other ERC20s, use teleportToPublicChain
@@ -321,7 +407,11 @@ export function Web3Provider({ children }) {
           await tx.wait();
           console.log('✅ Bridge transaction confirmed:', tx.hash);
 
-          return tx.hash;
+          return {
+            transactionHash: tx.hash,
+            blockNumber: tx.blockNumber || 'pending',
+            gasUsed: tx.gasLimit?.toString() || 'unknown'
+          };
         }
       }
 
@@ -341,9 +431,128 @@ export function Web3Provider({ children }) {
     console.log(`🔍 Getting balance for ${userAddress} on ${chain} chain`);
     
     try {
-      // If no token address, get native USDr balance
+      // For private chain, check YieldVault or YieldToken contracts
+      if (chain === 'PRIVATE') {
+        console.log('🔍 Checking private chain balance...');
+        console.log('📍 Token address being checked:', tokenAddress || 'native');
+        console.log('👤 User address being checked:', userAddress);
+        
+        if (!privateProvider) {
+          console.log('❌ Private provider not available');
+          return '0';
+        }
+        
+        try {
+          // If we have a token address, determine which contract to check
+          if (tokenAddress && tokenAddress !== '') {
+            // If checking the public mirror address, map it to private chain contracts
+            if (tokenAddress.toLowerCase() === '0x4Ad3F180D8c5fB1Cdfd6dbed5Cc1fFa5432d30F9'.toLowerCase()) {
+              console.log('� Mapping public mirror to private chain contracts...');
+              
+              // Check YieldVault first (where bridged tokens go)
+              const yieldVaultAddress = '0x7e5c367489A86DC1eb4A5D54F13c71d15eFA58af';
+              console.log('🏦 Checking YieldVault balance:', yieldVaultAddress);
+              
+              try {
+                const yieldVaultContract = new ethers.Contract(
+                  yieldVaultAddress,
+                  [
+                    'function getUserTotalValue(address) view returns (uint256, uint256)',
+                    'function balanceOf(address) view returns (uint256)'
+                  ],
+                  privateProvider
+                );
+                
+                // Try getUserTotalValue first (from integration guide)
+                try {
+                  const [principal, userYield] = await yieldVaultContract.getUserTotalValue(userAddress);
+                  console.log('💰 YieldVault principal:', ethers.formatEther(principal));
+                  console.log('📈 YieldVault yield:', ethers.formatEther(userYield));
+                  
+                  const total = principal + userYield;
+                  const formatted = ethers.formatEther(total);
+                  console.log(`✅ YieldVault total value: ${formatted} PAVEL`);
+                  return formatted;
+                } catch (valueErr) {
+                  console.log('⚠️ getUserTotalValue failed, trying balanceOf...');
+                  
+                  // Fallback to balanceOf
+                  const balance = await yieldVaultContract.balanceOf(userAddress);
+                  const formatted = ethers.formatEther(balance);
+                  console.log(`✅ YieldVault balance: ${formatted} PAVEL`);
+                  return formatted;
+                }
+              } catch (vaultErr) {
+                console.error('❌ YieldVault check failed:', vaultErr.message);
+                
+                // Try YieldToken as fallback
+                const yieldTokenAddress = '0x3661E4536FCb41b9c4Fad67B78c3D218b811b0bD';
+                console.log('🪙 Checking YieldToken balance:', yieldTokenAddress);
+                
+                try {
+                  const yieldTokenContract = new ethers.Contract(
+                    yieldTokenAddress,
+                    [
+                      'function balanceOf(address) view returns (uint256)',
+                      'function name() view returns (string)',
+                      'function symbol() view returns (string)',
+                      'function decimals() view returns (uint8)'
+                    ],
+                    privateProvider
+                  );
+                  
+                  const balance = await yieldTokenContract.balanceOf(userAddress);
+                  const formatted = ethers.formatEther(balance);
+                  console.log(`✅ YieldToken balance: ${formatted} PAVEL`);
+                  return formatted;
+                } catch (tokenErr) {
+                  console.error('❌ YieldToken check failed:', tokenErr.message);
+                }
+              }
+            } else {
+              // For other token addresses, try direct contract call
+              console.log('🪙 Checking other ERC20 token on private chain:', tokenAddress);
+              
+              const tokenContract = new ethers.Contract(
+                tokenAddress,
+                [
+                  'function balanceOf(address account) view returns (uint256)',
+                  'function name() view returns (string)',
+                  'function symbol() view returns (string)',
+                  'function decimals() view returns (uint8)'
+                ],
+                privateProvider
+              );
+              
+              const balance = await tokenContract.balanceOf(userAddress);
+              const formatted = ethers.formatEther(balance);
+              console.log(`✅ Token balance: ${formatted} PAVEL`);
+              return formatted;
+            }
+          } else {
+            // For native PAVEL, check direct balance
+            console.log('🪙 Checking native PAVEL balance on private chain');
+            const balance = await privateProvider.getBalance(userAddress);
+            const formatted = ethers.formatEther(balance);
+            console.log(`✅ Private native balance: ${formatted} PAVEL`);
+            return formatted;
+          }
+          
+        } catch (privateErr) {
+          console.error('❌ Private chain balance check failed:', privateErr);
+          console.log('🔄 Falling back to direct balance check...');
+          
+          // Final fallback
+          const fallbackBalance = await privateProvider.getBalance(userAddress);
+          const fallbackFormatted = ethers.formatEther(fallbackBalance);
+          console.log(`📊 Fallback private balance: ${fallbackFormatted} PAVEL`);
+          return fallbackFormatted;
+        }
+      }
+      
+      // If no token address, get native PAVEL balance
       if (!tokenAddress) {
-        console.log('🪙 Getting native USDr balance');
+        console.log('🪙 Getting native PAVEL balance');
         const provider = chain === 'PUBLIC' ? publicProvider : privateProvider;
         if (!provider) {
           console.log(`❌ ${chain} provider not available`);
@@ -352,16 +561,16 @@ export function Web3Provider({ children }) {
         
         const balance = await provider.getBalance(userAddress);
         const formatted = ethers.formatEther(balance);
-        console.log(`✅ Native balance: ${formatted} USDr`);
+        console.log(`✅ Native balance: ${formatted} PAVEL`);
         return formatted;
       }
       
       // For ERC20 tokens, check if it's the deployment proxy registry
       if (tokenAddress.toLowerCase() === '0x75da1758161588fd2ccbfd23ab87f373b0f73c8f'.toLowerCase()) {
-        console.log('🪙 Deployment proxy registry detected - this handles native USDr bridging');
-        console.log('🔄 Getting native USDr balance for bridging');
+        console.log('🪙 Deployment proxy registry detected - this handles native PAVEL bridging');
+        console.log('🔄 Getting native PAVEL balance for bridging');
         
-        // For deployment proxy registry, we should get native USDr balance
+        // For deployment proxy registry, we should get native PAVEL balance
         const provider = chain === 'PUBLIC' ? publicProvider : privateProvider;
         if (!provider) {
           console.log(`❌ ${chain} provider not available`);
@@ -370,7 +579,7 @@ export function Web3Provider({ children }) {
         
         const balance = await provider.getBalance(userAddress);
         const formatted = ethers.formatEther(balance);
-        console.log(`✅ Native balance for bridging: ${formatted} USDr`);
+        console.log(`✅ Native balance for bridging: ${formatted} PAVEL`);
         return formatted;
       }
       
@@ -417,7 +626,7 @@ export function Web3Provider({ children }) {
           const pubBalance = await publicProvider.getBalance(userAddress);
           const pubFormatted = ethers.formatEther(pubBalance);
           console.log(`Raw balance: ${pubBalance.toString()}`);
-          console.log(`Formatted: ${pubFormatted} USDr`);
+          console.log(`Formatted: ${pubFormatted} PAVEL`);
         } catch (pubErr) {
           console.error('❌ Public provider error:', pubErr.message);
         }
@@ -435,7 +644,7 @@ export function Web3Provider({ children }) {
           const privBalance = await privateProvider.getBalance(userAddress);
           const privFormatted = ethers.formatEther(privBalance);
           console.log(`Raw balance: ${privBalance.toString()}`);
-          console.log(`Formatted: ${privFormatted} USDr`);
+          console.log(`Formatted: ${privFormatted} PAVEL`);
         } catch (privErr) {
           console.error('❌ Private provider error:', privErr.message);
           console.log('ℹ️ Private chain may be temporarily unavailable');
@@ -445,33 +654,24 @@ export function Web3Provider({ children }) {
       }
       
     } catch (error) {
-      console.error('❌ Debug balance failed:', error);
+      console.error('❌ Debug balance error:', error);
     }
   };
 
   const value = {
-    // Providers and signers
+    account,
     publicProvider,
     privateProvider,
-    publicSigner,
-    privateSigner,
-    
-    // Account state
-    account,
-    isConnecting,
-    error,
-    
-    // Methods
     connectWallet,
     disconnectWallet,
-    getTokenContract,
-    getTokenContractWithSigner,
     bridgeToPrivate,
+    mintToVault,
     getBalance,
-    debugBalance, // Added debug function
-    
-    // Constants
+    getContract,
+    debugBalance,
     CHAINS,
+    isConnecting,
+    web3Error: error
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

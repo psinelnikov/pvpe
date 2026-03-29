@@ -240,7 +240,7 @@ node scripts/dailyRebalancer.js
 - **Chain ID**: `7295799`
 - **RPC Endpoint**: `https://testnet-rpc.rayls.com`
 - **Explorer**: `https://testnet-explorer.rayls.com`
-- **Gas Token**: USDr
+- **Gas Token**: PAVEL
 
 ## Usage
 
